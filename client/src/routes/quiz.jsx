@@ -1,18 +1,18 @@
 // import { createRoute, redirect } from '@tanstack/react-router';
 // import { protectedRoute } from './protectedRoute';
-// import Dashboard from '../features/backend/dashboard/pages/DashboardPage';
+// import { QuizPage } from '../features/backend/quiz/pages/QuizPage';
 // import { authService } from '../services/authService';
 
-// export const dashboardRoute = createRoute({
+// export const quizRoute = createRoute({
 //   getParentRoute: () => protectedRoute,
-//   path: '/dashboard',
-//   component: Dashboard,
+//   path: '/quiz',
+//   component: QuizPage,
 //   beforeLoad: () => {
 //     if (!authService.isAuthenticated()) {
 //       throw redirect({
 //         to: '/',
 //         search: {
-//           redirect: '/dashboard',
+//           redirect: '/quiz',
 //         },
 //       });
 //     }
@@ -21,10 +21,10 @@
 
 import { createRoute } from '@tanstack/react-router';
 import { protectedRoute } from './protectedRoute';
-import Dashboard from '../features/backend/dashboard/pages/DashboardPage';
+import { QuizPage } from '../features/backend/quiz/pages/QuizPage';
 
-export const dashboardRoute = createRoute({
+export const quizRoute = createRoute({
   getParentRoute: () => protectedRoute,
-  path: '/dashboard',
-  component: Dashboard,
+  path: '/quiz',
+  component: QuizPage,
 });

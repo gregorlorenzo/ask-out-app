@@ -1,25 +1,19 @@
-import { createRouter, createRoute } from '@tanstack/react-router';
+import { createRouter } from '@tanstack/react-router';
 import { rootRoute } from './root';
 import { protectedRoute } from './protectedRoute';
-import LoginPage from '../features/auth/pages/LoginPage';
-import DashboardPage from '../features/dashboard/pages/DashboardPage';
-
-const loginRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: LoginPage,
-});
-
-const dashboardRoute = createRoute({
-  getParentRoute: () => protectedRoute,
-  path: '/dashboard',
-  component: DashboardPage,
-});
+import { loginRoute } from './login';
+import { dashboardRoute } from './dashboard';
+import { quizRoute } from './quiz';
+import { letterRoute } from './letter';
+import { slideshowRoute } from './slideshow';
 
 const routeTree = rootRoute.addChildren([
   loginRoute,
   protectedRoute.addChildren([
     dashboardRoute,
+    quizRoute,
+    letterRoute,
+    slideshowRoute,
   ])
 ]);
 

@@ -1,18 +1,18 @@
 // import { createRoute, redirect } from '@tanstack/react-router';
 // import { protectedRoute } from './protectedRoute';
-// import Dashboard from '../features/backend/dashboard/pages/DashboardPage';
+// import { LetterPage } from '../features/backend/letter/pages/LetterPage';
 // import { authService } from '../services/authService';
 
-// export const dashboardRoute = createRoute({
+// export const letterRoute = createRoute({
 //   getParentRoute: () => protectedRoute,
-//   path: '/dashboard',
-//   component: Dashboard,
+//   path: '/letters',
+//   component: LetterPage,
 //   beforeLoad: () => {
 //     if (!authService.isAuthenticated()) {
 //       throw redirect({
 //         to: '/',
 //         search: {
-//           redirect: '/dashboard',
+//           redirect: '/letters',
 //         },
 //       });
 //     }
@@ -21,10 +21,10 @@
 
 import { createRoute } from '@tanstack/react-router';
 import { protectedRoute } from './protectedRoute';
-import Dashboard from '../features/backend/dashboard/pages/DashboardPage';
+import { LetterPage } from '../features/backend/letter/pages/LetterPage';
 
-export const dashboardRoute = createRoute({
+export const letterRoute = createRoute({
   getParentRoute: () => protectedRoute,
-  path: '/dashboard',
-  component: Dashboard,
+  path: "/letter",
+  component: LetterPage,
 });
