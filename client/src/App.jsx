@@ -1,14 +1,15 @@
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
+import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Outlet } from '@tanstack/react-router';
+
+const queryClient = new QueryClient();
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div>
-      <Button>Click me</Button>
-    </div>
-  )
+    <QueryClientProvider client={queryClient}>
+      <Outlet />
+    </QueryClientProvider>
+  );
 }
 
-export default App
+export default App;
