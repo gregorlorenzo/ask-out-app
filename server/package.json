@@ -15,6 +15,7 @@
     "@aws-sdk/s3-request-presigner": "^3.x.x",
     "ask-out-app": "file:",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.x.x",
     "express": "^4.x.x",
     "jsonwebtoken": "^9.x.x",
