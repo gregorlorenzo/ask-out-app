@@ -19,7 +19,11 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes({
+  GUEST_PASSKEY: process.env.GUEST_PASSKEY,
+  ADMIN_PASSKEY: process.env.ADMIN_PASSKEY,
+  JWT_SECRET: process.env.JWT_SECRET
+}));
 app.use('/api/quiz', quizRoutes);
 app.use('/api/slideshow', slideshowRoutes);
 app.use('/api/letters', letterRoutes);
