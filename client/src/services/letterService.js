@@ -1,40 +1,30 @@
-import axios from 'axios';
-import { authService } from './authService';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import api from './apiConfig';
 
 export const letterService = {
-  getLetters: async () => {
-    const response = await axios.get(`${API_URL}/api/letters`);
+  getLetters: async (page = 1, limit = 10) => {
+    const response = await api.get('/api/letters', {
+      params: { page, limit }
+    });
     return response.data;
   },
 
   getLetterById: async (id) => {
-    const response = await axios.get(`${API_URL}/api/letters/${id}`);
+    const response = await api.get(`/api/letters/${id}`);
     return response.data;
   },
 
   createLetter: async (letterData) => {
-    const config = {
-      headers: { Authorization: `Bearer ${authService.getToken()}` }
-    };
-    const response = await axios.post(`${API_URL}/api/letters`, letterData, config);
+    const response = await api.post('/api/letters', letterData);
     return response.data;
   },
 
   updateLetter: async (id, letterData) => {
-    const config = {
-      headers: { Authorization: `Bearer ${authService.getToken()}` }
-    };
-    const response = await axios.put(`${API_URL}/api/letters/${id}`, letterData, config);
+    const response = await api.put(`/api/letters/${id}`, letterData);
     return response.data;
   },
 
   deleteLetter: async (id) => {
-    const config = {
-      headers: { Authorization: `Bearer ${authService.getToken()}` }
-    };
-    const response = await axios.delete(`${API_URL}/api/letters/${id}`, config);
+    const response = await api.delete(`/api/letters/${id}`);
     return response.data;
   }
 };

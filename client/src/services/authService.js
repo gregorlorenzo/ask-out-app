@@ -1,15 +1,15 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import api from './apiConfig';
+import { jwtDecode } from 'jwt-decode';
 
 export const authService = {
   login: async (passkey) => {
-    const response = await axios.post(`${API_URL}/api/auth/login`, { passkey });
+    const response = await api.post('/api/auth/login', { passkey });
+    const { token } = response.data;
+    authService.setToken(token);
     return response.data;
   },
 
   logout: () => {
-    // Clear token from storage
     localStorage.removeItem('token');
   },
 
@@ -23,5 +23,18 @@ export const authService = {
 
   isAuthenticated: () => {
     return !!localStorage.getItem('token');
+  },
+
+  getRole: () => {
+    const token = authService.getToken();
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      return decodedToken.user.role;
+    }
+    return null;
+  },
+
+  isAdmin: () => {
+    return authService.getRole() === 'admin';
   },
 };

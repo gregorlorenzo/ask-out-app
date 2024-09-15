@@ -1,11 +1,16 @@
 const Slideshow = require('../models/Slideshow');
 const { uploadImage, deleteImage } = require('../utils/imageUploader');
+const { paginateResults } = require('../utils/helper')
 
 // Get all slideshow items
 exports.getSlideshow = async (req, res) => {
   try {
-    const slideshow = await Slideshow.find().sort({ date: 1 });
-    res.json(slideshow);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const paginatedResults = await paginateResults(Slideshow, {}, page, limit, '', null, { date: 1 });
+
+    res.json(paginatedResults);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

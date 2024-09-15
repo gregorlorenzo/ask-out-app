@@ -1,10 +1,15 @@
 const Quiz = require('../models/Quiz');
+const { paginateResults } = require('../utils/helper')
 
 // Get all quiz questions
 exports.getQuestions = async (req, res) => {
   try {
-    const questions = await Quiz.find().select('-correctAnswer');
-    res.json(questions);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const paginatedResults = await paginateResults(Quiz, {}, page, limit, '-correctAnswer');
+
+    res.json(paginatedResults);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -19,6 +24,43 @@ exports.getQuestionById = async (req, res) => {
     }
     res.json(question);
   } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Submit and check an answer
+exports.submitAnswer = async (req, res) => {
+  try {
+    const { questionId, userAnswer } = req.body;
+
+    const question = await Quiz.findById(questionId);
+
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    const isCorrect = question.correctAnswer === userAnswer;
+
+    res.json({
+      isCorrect,
+      correctAnswer: isCorrect ? question.correctAnswer : undefined
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get all quiz questions with correct answers (admin only)
+exports.getQuestionsAdmin = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const paginatedResults = await paginateResults(Quiz, {}, page, limit);
+
+    res.json(paginatedResults);
+  } catch (error) {
+    console.error('Error in getQuestionsAdmin:', error);
     res.status(500).json({ message: error.message });
   }
 };

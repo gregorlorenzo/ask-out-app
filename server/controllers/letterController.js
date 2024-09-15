@@ -1,10 +1,15 @@
 const Letter = require('../models/Letter');
+const { paginateResults } = require('../utils/helper')
 
 // Get all letters
 exports.getLetters = async (req, res) => {
   try {
-    const letters = await Letter.find().sort({ date: -1 });
-    res.json(letters);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const paginatedResults = await paginateResults(Letter, {}, page, limit, '', null, { date: -1 });
+
+    res.json(paginatedResults);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

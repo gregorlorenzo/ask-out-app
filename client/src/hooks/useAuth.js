@@ -9,9 +9,14 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
-      authService.setToken(data.token);
       queryClient.invalidateQueries('user');
-      navigate({ to: '/dashboard' });
+      const role = authService.getRole();
+      console.log(role)
+      if (role === 'admin') {
+        navigate({ to: '/dashboard' });
+      } else {
+        navigate({ to: '/guest' });
+      }
     },
   });
 
@@ -26,5 +31,7 @@ export const useAuth = () => {
     logout,
     isLoading: loginMutation.isLoading,
     error: loginMutation.error,
+    isAdmin: authService.isAdmin,
+    getRole: authService.getRole,
   };
 };

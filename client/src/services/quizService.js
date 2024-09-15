@@ -1,40 +1,35 @@
-import axios from 'axios';
-import { authService } from './authService';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import api from './apiConfig';
 
 export const quizService = {
-  getQuestions: async () => {
-    const response = await axios.get(`${API_URL}/api/quiz`);
+  getQuestions: async (isAdmin, page = 1, limit = 10) => {
+    const response = await api.get(isAdmin ? '/api/quiz/admin' : '/api/quiz', {
+      params: { page, limit }
+    });
     return response.data;
   },
 
   getQuestionById: async (id) => {
-    const response = await axios.get(`${API_URL}/api/quiz/${id}`);
+    const response = await api.get(`/api/quiz/${id}`);
     return response.data;
   },
 
   createQuestion: async (questionData) => {
-    const config = {
-      headers: { Authorization: `Bearer ${authService.getToken()}` }
-    };
-    const response = await axios.post(`${API_URL}/api/quiz`, questionData, config);
+    const response = await api.post('/api/quiz', questionData);
     return response.data;
   },
 
   updateQuestion: async (id, questionData) => {
-    const config = {
-      headers: { Authorization: `Bearer ${authService.getToken()}` }
-    };
-    const response = await axios.put(`${API_URL}/api/quiz/${id}`, questionData, config);
+    const response = await api.put(`/api/quiz/${id}`, questionData);
     return response.data;
   },
 
   deleteQuestion: async (id) => {
-    const config = {
-      headers: { Authorization: `Bearer ${authService.getToken()}` }
-    };
-    const response = await axios.delete(`${API_URL}/api/quiz/${id}`, config);
+    const response = await api.delete(`/api/quiz/${id}`);
+    return response.data;
+  },
+
+  submitAnswer: async (questionId, userAnswer) => {
+    const response = await api.post('/api/quiz/submit-answer', { questionId, userAnswer });
     return response.data;
   }
 };
