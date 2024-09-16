@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast'
 import { LetterForm } from '@/components/admin/Letter/LetterForm'
 
 const EditLetter = () => {
-    const { letterId } = useParams()
+    const letterId = useParams({ select: (params) => params.letterId })
     const { updateLetter, getLetterById } = useLetter()
     const { toast } = useToast()
     const navigate = useNavigate()
@@ -15,8 +15,6 @@ const EditLetter = () => {
     if (isLoading) return <div>Loading...</div>
     if (error) return <div>Error: {error.message}</div>
     if (!letter) return <div>No letter found</div>
-
-    console.log('Letter data:', letter) // Add this line to log the letter data
 
     const handleEditLetter = (data) => {
         if (!letterId) {
@@ -50,11 +48,11 @@ const EditLetter = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-3xl font-bold tracking-tight">Edit Letter</h2>
             <LetterForm
                 initialData={letter}
                 onSubmit={handleEditLetter}
                 onCancel={() => navigate({ to: '/dashboard/letter' })}
+                mode="edit"
             />
         </div>
     )
