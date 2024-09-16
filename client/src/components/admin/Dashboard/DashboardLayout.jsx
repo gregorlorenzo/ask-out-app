@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Outlet } from '@tanstack/react-router';
 import Sidebar from './Sidebar';
+import { SkeletonDashboard } from '@/components/common/SkeletonComponents';
 
 const DashboardLayout = () => {
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
+    <div className="flex h-screen bg-zinc-800">
       <Sidebar />
-
-      {/* Main content */}
-      <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200">
-        <div className="container mx-auto px-6 py-8">
+      <main className="flex-1 overflow-x-hidden overflow-y-auto bg-zinc-200 p-4">
+        <Suspense fallback={<SkeletonDashboard />}>
           <Outlet />
-        </div>
+        </Suspense>
       </main>
     </div>
   );

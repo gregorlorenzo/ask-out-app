@@ -9,8 +9,13 @@ export const letterService = {
   },
 
   getLetterById: async (id) => {
-    const response = await api.get(`/api/letters/${id}`);
-    return response.data;
+    try {
+      const response = await api.get(`/api/letters/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching letter:', error);
+      throw error;
+    }
   },
 
   createLetter: async (letterData) => {

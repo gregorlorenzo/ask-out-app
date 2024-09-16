@@ -3,10 +3,12 @@ import { protectedRoute } from './protectedRoute';
 import { lazy } from 'react'
 
 const DashboardLayout = lazy(() => import('@/components/admin/Dashboard/DashboardLayout'))
-const Dashboard = lazy(() => import('@/pages/admin/Dashboard'))
-const Quiz = lazy(() => import('@/pages/admin/Quiz'))
-const Letter = lazy(() => import('@/pages/admin/Letter'))
-const Slideshow = lazy(() => import('@/pages/admin/Slideshow'))
+const Dashboard = lazy(() => import('@/pages/admin/Dashboard/Dashboard'))
+const Quiz = lazy(() => import('@/pages/admin/Quiz/Quiz'))
+const Letter = lazy(() => import('@/pages/admin/Letter/Letter'))
+const AddLetter = lazy(() => import('@/pages/admin/Letter/AddLetter'))
+const EditLetter = lazy(() => import('@/pages/admin/Letter/EditLetter'))
+const Slideshow = lazy(() => import('@/pages/admin/Slideshow/Slideshow'))
 
 const dashboardRoute = createRoute({
   getParentRoute: () => protectedRoute,
@@ -32,6 +34,18 @@ const letterRoute = createRoute({
   component: Letter,
 });
 
+const addLetterRoute = createRoute({
+  getParentRoute: () => dashboardRoute,
+  path: '/letter/add',
+  component: AddLetter,
+});
+
+const editLetterRoute = createRoute({
+  getParentRoute: () => dashboardRoute,
+  path: '/letter/$letterId',
+  component: EditLetter,
+});
+
 const slideshowRoute = createRoute({
   getParentRoute: () => dashboardRoute,
   path: '/slideshow',
@@ -43,5 +57,7 @@ export const adminRoutes = [
   dashboardIndexRoute,
   quizRoute,
   letterRoute,
+  addLetterRoute,
+  editLetterRoute,
   slideshowRoute
 ];

@@ -22,7 +22,7 @@ const SidebarItem = ({ icon: Icon, children, to, onClick, isCollapsed }) => {
     </>
   );
   const buttonClass = cn(
-    "w-full justify-start transition-colors hover:bg-zinc-700/50 dark:hover:bg-zinc-700/50",
+    "w-full justify-start transition-colors hover:bg-zinc-700/50 dark:hover:bg-zinc-700/50 hover:text-zinc-50 dark:hover:text-zinc-50",
     isActive && "bg-zinc-700/70 text-zinc-50 dark:bg-zinc-700/70 dark:text-zinc-50",
     isCollapsed ? "px-2" : "px-4"
   );
@@ -61,7 +61,7 @@ const Sidebar = () => {
             size="icon"
             onClick={() => setIsCollapsed(!isCollapsed)}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="hover:bg-zinc-700/50"
+            className="hover:bg-zinc-700/50 hover:text-zinc-50 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50"
           >
             <Menu className="h-5 w-5" />
           </Button>

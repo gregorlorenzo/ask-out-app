@@ -5,7 +5,6 @@ import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Check } from 'lucide-react'
@@ -42,7 +41,7 @@ export const QuizForm = ({ initialData, onSubmit, onCancel }) => {
 
                 <div>
                     <Label className="text-sm font-medium">Options</Label>
-                    <p className="text-sm text-muted-foreground mb-2">Click an option to set it as the correct answer.</p>
+                    <p className="text-sm text-muted-foreground mb-2">Click the check icon to set an option as the correct answer.</p>
                     <Card className="mt-2">
                         <CardContent className="p-4">
                             <Controller
@@ -53,20 +52,30 @@ export const QuizForm = ({ initialData, onSubmit, onCancel }) => {
                                         {[0, 1, 2, 3].map((index) => (
                                             <div
                                                 key={index}
-                                                className={`flex items-center space-x-3 p-2 rounded-md transition-colors cursor-pointer ${field.value === index ? 'bg-primary/10' : 'hover:bg-muted'
+                                                className={`flex items-center space-x-3 p-2 rounded-md transition-all duration-200 ${field.value === index ? 'bg-primary/5 ring-2 ring-primary' : 'hover:bg-muted/50'
                                                     }`}
-                                                onClick={() => field.onChange(index)}
                                             >
-                                                <div className="w-6 h-6 flex items-center justify-center">
-                                                    {field.value === index && (
-                                                        <Check className="h-4 w-4 text-primary" />
-                                                    )}
-                                                </div>
                                                 <Input
                                                     {...register(`options.${index}`)}
                                                     placeholder={`Option ${index + 1}`}
-                                                    className="flex-grow"
+                                                    className={`flex-grow transition-colors duration-200 ${field.value === index ? 'border-primary' : ''
+                                                        }`}
                                                 />
+                                                <div
+                                                    className={`w-6 h-6 flex items-center justify-center rounded-full border cursor-pointer transition-all duration-200
+                                ${field.value === index
+                                                            ? 'bg-primary border-primary'
+                                                            : 'border-input hover:border-primary hover:bg-primary/10'
+                                                        }`}
+                                                    onClick={() => field.onChange(index)}
+                                                >
+                                                    <Check
+                                                        className={`h-4 w-4 transition-opacity duration-200 ${field.value === index
+                                                                ? 'text-primary-foreground'
+                                                                : 'text-primary opacity-30'
+                                                            }`}
+                                                    />
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
