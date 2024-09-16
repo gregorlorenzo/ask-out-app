@@ -1,5 +1,5 @@
 import React from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
@@ -15,9 +15,7 @@ const letterSchema = z.object({
     content: z.string().min(1, 'Content is required'),
 })
 
-export const LetterForm = ({ initialData, onSubmit, onCancel }) => {
-    console.log('Initial data received:', initialData) // Add this line
-
+export const LetterForm = ({ initialData, onSubmit, onCancel, mode = 'create' }) => {
     const form = useForm({
         resolver: zodResolver(letterSchema),
         defaultValues: {
@@ -32,7 +30,9 @@ export const LetterForm = ({ initialData, onSubmit, onCancel }) => {
     return (
         <Card className="w-full max-w-4xl mx-auto">
             <CardHeader className="border-b">
-                <CardTitle className="text-2xl font-bold">Create New Letter</CardTitle>
+                <CardTitle className="text-2xl font-bold">
+                    {mode === 'create' ? 'Create New Letter' : 'Edit Letter'}
+                </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
                 <Form {...form}>
