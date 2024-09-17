@@ -1,4 +1,4 @@
-const paginateResults = async (model, query = {}, page = 1, limit = 10, select = '', populate = null) => {
+const paginateResults = async (model, query = {}, page = 1, limit = 10, select = '', populate = null, sort = null) => {
     const startIndex = (page - 1) * limit;
 
     let results = model.find(query);
@@ -9,6 +9,10 @@ const paginateResults = async (model, query = {}, page = 1, limit = 10, select =
 
     if (populate) {
         results = results.populate(populate);
+    }
+
+    if (sort) {
+        results = results.sort(sort);
     }
 
     const data = await results.skip(startIndex).limit(limit);

@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
-import { useLetter } from '@/hooks/useLetter'
+import { useSlideshow } from '@/hooks/useSlideshow'
 import { MoreHorizontal, ArrowUpDown } from 'lucide-react'
 import {
     DropdownMenu,
@@ -28,9 +28,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export const LetterTable = ({ onEdit, onDelete }) => {
+export const SlideshowTable = ({ onEdit, onDelete }) => {
     const {
-        letters,
+        slides,
         totalPages,
         currentPage,
         totalItems,
@@ -39,7 +39,7 @@ export const LetterTable = ({ onEdit, onDelete }) => {
         setSort,
         isLoading,
         error
-    } = useLetter()
+    } = useSlideshow()
     const [sorting, setSorting] = React.useState([])
     const [columnFilters, setColumnFilters] = React.useState([])
 
@@ -74,8 +74,8 @@ export const LetterTable = ({ onEdit, onDelete }) => {
         {
             id: "actions",
             cell: ({ row }) => {
-                const letter = row.original
-                if (!letter || !letter._id) return null
+                const slide = row.original
+                if (!slide || !slide._id) return null
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -86,11 +86,11 @@ export const LetterTable = ({ onEdit, onDelete }) => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => onEdit(letter)}>
+                            <DropdownMenuItem onClick={() => onEdit(slide)}>
                                 Edit
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => onDelete(letter._id)}>
+                            <DropdownMenuItem onClick={() => onDelete(slide._id)}>
                                 Delete
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -101,7 +101,7 @@ export const LetterTable = ({ onEdit, onDelete }) => {
     ]
 
     const table = useReactTable({
-        data: letters,
+        data: slides,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -136,7 +136,7 @@ export const LetterTable = ({ onEdit, onDelete }) => {
     return (
         <Card className="w-full h-[600px] flex flex-col">
             <CardHeader>
-                <CardTitle>Letters</CardTitle>
+                <CardTitle>Slides</CardTitle>
             </CardHeader>
             <CardContent className="flex-grow flex flex-col">
                 <div className="flex items-center py-4">
@@ -193,7 +193,7 @@ export const LetterTable = ({ onEdit, onDelete }) => {
             </CardContent>
             <CardFooter className="flex items-center justify-between space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
-                    <span className="inline-block w-32">{totalItems} letter(s) total</span>
+                    <span className="inline-block w-32">{totalItems} slide(s) total</span>
                 </div>
                 <div className="space-x-2">
                     <Button

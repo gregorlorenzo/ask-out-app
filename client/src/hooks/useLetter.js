@@ -8,10 +8,11 @@ export const useLetter = () => {
   const { isAdmin } = useAuth();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
+  const [sort, setSort] = useState('-date');
 
   const getLetters = useQuery({
-    queryKey: ['letters', page, limit],
-    queryFn: () => letterService.getLetters(page, limit),
+    queryKey: ['letters', page, limit, sort],
+    queryFn: () => letterService.getLetters(page, limit, sort),
     keepPreviousData: true,
   });
 
@@ -48,6 +49,7 @@ export const useLetter = () => {
     totalItems: getLetters.data?.totalItems || 0,
     setPage,
     setLimit,
+    setSort,
     getLetterById,
     createLetter: createLetterMutation.mutate,
     updateLetter: updateLetterMutation.mutate,

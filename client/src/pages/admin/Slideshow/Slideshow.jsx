@@ -1,14 +1,15 @@
 import React, { Suspense } from 'react';
+import { SlideshowManager } from '@/components/admin/Slideshow/SlideshowManager';
 import { SkeletonList } from '@/components/common/SkeletonComponents';
 
-const Letter = () => {
+const Quiz = () => {
   return (
     <div className="container mx-auto py-8">
       <Suspense fallback={<SkeletonList />}>
-        <h1>Slideshow Management</h1>
+        <SlideshowManager />
       </Suspense>
     </div>
   );
 };
 
-export default Letter;
+export default Quiz;

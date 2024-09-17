@@ -6,8 +6,9 @@ exports.getLetters = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-
-    const paginatedResults = await paginateResults(Letter, {}, page, limit, '', null, { date: -1 });
+    const sort = req.query.sort || '-date';
+    
+    const paginatedResults = await paginateResults(Letter, {}, page, limit, '', null, sort);
 
     res.json(paginatedResults);
   } catch (error) {

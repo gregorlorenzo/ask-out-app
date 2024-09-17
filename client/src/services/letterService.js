@@ -1,9 +1,9 @@
 import api from './apiConfig';
 
 export const letterService = {
-  getLetters: async (page = 1, limit = 10) => {
+  getLetters: async (page = 1, limit = 10, sort = '-date') => {
     const response = await api.get('/api/letters', {
-      params: { page, limit }
+      params: { page, limit, sort }
     });
     return response.data;
   },

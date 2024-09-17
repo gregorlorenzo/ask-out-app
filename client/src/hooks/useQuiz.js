@@ -8,10 +8,11 @@ export const useQuiz = () => {
   const { isAdmin } = useAuth();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
+  const [sort, setSort] = useState('-_id');
 
   const getQuestions = useQuery({
-    queryKey: ['questions', isAdmin(), page, limit],
-    queryFn: () => quizService.getQuestions(isAdmin(), page, limit),
+    queryKey: ['questions', isAdmin(), page, limit, sort],
+    queryFn: () => quizService.getQuestions(isAdmin(), page, limit, sort),
     keepPreviousData: true,
   });
 
@@ -52,6 +53,7 @@ export const useQuiz = () => {
     totalItems: getQuestions.data?.totalItems || 0,
     setPage,
     setLimit,
+    setSort,
     getQuestionById,
     createQuestion: createQuestionMutation.mutate,
     updateQuestion: updateQuestionMutation.mutate,

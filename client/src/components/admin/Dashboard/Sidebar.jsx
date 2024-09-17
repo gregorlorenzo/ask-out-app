@@ -14,7 +14,10 @@ import { useAuth } from '@/hooks/useAuth';
 
 const SidebarItem = ({ icon: Icon, children, to, onClick, isCollapsed }) => {
   const location = useLocation();
-  const isActive = location.pathname === to;
+  const isActive = to === '/dashboard'
+    ? location.pathname === '/dashboard'
+    : location.pathname.startsWith(to) && to !== '/dashboard';
+
   const content = (
     <>
       <Icon className="h-5 w-5" />

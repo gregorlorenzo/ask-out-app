@@ -1,4 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  getSortedRowModel,
+  getFilteredRowModel,
+} from "@tanstack/react-table"
 import {
   Table,
   TableBody,
@@ -8,10 +15,18 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { useQuiz } from '@/hooks/useQuiz'
-import { Edit, Trash2 } from 'lucide-react'
-import GlobalPagination from '@/components/common/GlobalPagination';
+import { MoreHorizontal, ArrowUpDown } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const AnswerCircle = ({ letter, isCorrect }) => (
   <div
@@ -23,12 +38,109 @@ const AnswerCircle = ({ letter, isCorrect }) => (
 )
 
 export const QuizTable = ({ onEdit, onDelete }) => {
-  const { questions, isLoading, error } = useQuiz()
-  const [currentPage, setCurrentPage] = useState(1)
-  const rowsPerPage = 5
+  const {
+    questions,
+    totalPages,
+    currentPage,
+    totalItems,
+    setPage,
+    setLimit,
+    setSort,
+    isLoading,
+    error
+  } = useQuiz()
+  const [sorting, setSorting] = React.useState([])
+  const [columnFilters, setColumnFilters] = React.useState([])
 
+  useEffect(() => {
+    if (sorting.length > 0) {
+      const [{ id, desc }] = sorting;
+      setSort(`${desc ? '-' : ''}${id}`);
+    }
+  }, [sorting, setSort]);
+
+  const columns = [
+    {
+      accessorKey: "question",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Question
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="font-medium">{row.getValue("question") || ""}</div>,
+    },
+    {
+      accessorKey: "correctAnswer",
+      header: "Answer Options",
+      cell: ({ row }) => {
+        const correctAnswer = row.getValue("correctAnswer")
+        return (
+          <div className="flex space-x-2">
+            {['A', 'B', 'C', 'D'].map((letter, i) => (
+              <AnswerCircle
+                key={i}
+                letter={letter}
+                isCorrect={i === correctAnswer}
+              />
+            ))}
+          </div>
+        )
+      },
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const question = row.original
+        if (!question || !question._id) return null
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => onEdit(question)}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onDelete(question._id)}>
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
+
+  const table = useReactTable({
+    data: questions,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
+    manualPagination: true,
+    manualSorting: true,
+    pageCount: totalPages,
+  })
+  
   if (isLoading) return (
-    <Card className="w-full h-[500px]">
+    <Card className="w-full h-[600px]">
       <CardContent className="flex justify-center items-center h-full">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </CardContent>
@@ -36,122 +148,94 @@ export const QuizTable = ({ onEdit, onDelete }) => {
   )
 
   if (error) return (
-    <Card className="w-full h-[500px]">
+    <Card className="w-full h-[600px]">
       <CardContent className="text-center py-4 text-destructive">
         Error: {error.message}
       </CardContent>
     </Card>
   )
 
-  const indexOfLastRow = currentPage * rowsPerPage
-  const indexOfFirstRow = indexOfLastRow - rowsPerPage
-  const currentRows = questions.slice(indexOfFirstRow, indexOfLastRow)
-
-  const totalPages = Math.ceil(questions.length / rowsPerPage)
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  if (questions.length === 0) {
-    return (
-      <Card className="w-full h-[550px] flex flex-col">
-        <CardHeader>
-          <CardTitle>Quiz Questions</CardTitle>
-        </CardHeader>
-        <CardContent className="flex-grow flex items-center justify-center">
-          <p className="text-muted-foreground">No questions available.</p>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  const rowsToRender = Array(5).fill(null);
-
   return (
-    <Card className="w-full h-[550px] flex flex-col">
+    <Card className="w-full h-[600px] flex flex-col">
       <CardHeader>
         <CardTitle>Quiz Questions</CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow overflow-hidden">
-        <div className="h-full overflow-auto">
+      <CardContent className="flex-grow flex flex-col">
+        <div className="flex items-center py-4">
+          <Input
+            placeholder="Filter questions..."
+            value={(table.getColumn("question")?.getFilterValue() ?? "")}
+            onChange={(event) =>
+              table.getColumn("question")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        </div>
+        <div className="rounded-md border flex-grow overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="border-b border-muted">
-                <TableHead className="w-[60%]">Question</TableHead>
-                <TableHead className="w-[30%]">Answer Options</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
             </TableHeader>
             <TableBody>
-              {rowsToRender.map((_, index) => {
-                const question = currentRows[index];
+              {[...Array(5)].map((_, index) => {
+                const row = table.getRowModel().rows[index]
                 return (
-                  <TableRow
-                    key={question ? question._id : `empty-${index}`}
-                    className={index !== 4 ? "border-b border-muted/50" : ""}
-                  >
-                    {question ? (
-                      <>
-                        <TableCell className="font-medium py-4">{question.question}</TableCell>
-                        <TableCell className="py-4">
-                          <div className="flex space-x-2">
-                            {['A', 'B', 'C', 'D'].map((letter, i) => (
-                              <AnswerCircle
-                                key={i}
-                                letter={letter}
-                                isCorrect={i === question.correctAnswer}
-                              />
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right py-4">
-                          <Button
-                            onClick={() => onEdit(question)}
-                            variant="ghost"
-                            size="icon"
-                            className="mr-2"
-                          >
-                            <Edit className="h-4 w-4" />
-                            <span className="sr-only">Edit</span>
-                          </Button>
-                          <Button
-                            onClick={() => onDelete(question._id)}
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive/90"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete</span>
-                          </Button>
-                        </TableCell>
-                      </>
-                    ) : (
-                      <>
-                        <TableCell className="py-4">&nbsp;</TableCell>
-                        <TableCell className="py-4">&nbsp;</TableCell>
-                        <TableCell className="py-4">&nbsp;</TableCell>
-                      </>
-                    )}
+                  <TableRow key={row ? row.id : `empty-${index}`} className="h-16"> {/* Fixed height */}
+                    {columns.map((column, cellIndex) => (
+                      <TableCell key={`${index}-${cellIndex}`} className="py-0">
+                        <div className="h-full flex items-center">
+                          {row
+                            ? flexRender(
+                              column.cell,
+                              row.getVisibleCells()[cellIndex].getContext()
+                            )
+                            : "\u00A0"}
+                        </div>
+                      </TableCell>
+                    ))}
                   </TableRow>
-                );
+                )
               })}
             </TableBody>
           </Table>
         </div>
       </CardContent>
-      {questions.length > 0 && (
-        <CardFooter className="flex justify-between items-center">
-          <div>
-            Showing {indexOfFirstRow + 1} to {Math.min(indexOfLastRow, questions.length)} of {questions.length} entries
-          </div>
-          <GlobalPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </CardFooter>
-      )}
+      <CardFooter className="flex items-center justify-between space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          <span className="inline-block w-32">{totalItems} question(s) total</span>
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   )
 }

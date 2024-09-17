@@ -9,6 +9,8 @@ const Letter = lazy(() => import('@/pages/admin/Letter/Letter'))
 const AddLetter = lazy(() => import('@/pages/admin/Letter/AddLetter'))
 const EditLetter = lazy(() => import('@/pages/admin/Letter/EditLetter'))
 const Slideshow = lazy(() => import('@/pages/admin/Slideshow/Slideshow'))
+const AddSlide = lazy(() => import('@/pages/admin/Slideshow/AddSlide'))
+const EditSlide = lazy(() => import('@/pages/admin/Slideshow/EditSlide'))
 
 const dashboardRoute = createRoute({
   getParentRoute: () => protectedRoute,
@@ -52,6 +54,18 @@ const slideshowRoute = createRoute({
   component: Slideshow,
 });
 
+const addSlideRoute = createRoute({
+  getParentRoute: () => dashboardRoute,
+  path: '/slideshow/add',
+  component: AddSlide,
+});
+
+const editSlideRoute = createRoute({
+  getParentRoute: () => dashboardRoute,
+  path: '/slideshow/$slideId',
+  component: EditSlide,
+});
+
 export const adminRoutes = [
   dashboardRoute,
   dashboardIndexRoute,
@@ -59,5 +73,7 @@ export const adminRoutes = [
   letterRoute,
   addLetterRoute,
   editLetterRoute,
-  slideshowRoute
+  slideshowRoute,
+  addSlideRoute,
+  editSlideRoute
 ];

@@ -7,8 +7,9 @@ exports.getSlideshow = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const sort = req.query.sort || 'date';
 
-    const paginatedResults = await paginateResults(Slideshow, {}, page, limit, '', null, { date: 1 });
+    const paginatedResults = await paginateResults(Slideshow, {}, page, limit, '', null, sort);
 
     res.json(paginatedResults);
   } catch (error) {
@@ -82,9 +83,10 @@ exports.deleteSlide = async (req, res) => {
     }
 
     await deleteImage(slide.imageKey);
-    await slide.remove();
+    await Slideshow.findByIdAndDelete(req.params.id);
     res.json({ message: 'Slide deleted successfully' });
   } catch (error) {
+    console.error('Error deleting slide:', error);
     res.status(500).json({ message: error.message });
   }
 };

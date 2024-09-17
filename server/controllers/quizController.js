@@ -6,8 +6,9 @@ exports.getQuestions = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const sort = req.query.sort || '-_id'; // Default sort by _id in descending order
 
-    const paginatedResults = await paginateResults(Quiz, {}, page, limit, '-correctAnswer');
+    const paginatedResults = await paginateResults(Quiz, {}, page, limit, '-correctAnswer', null, sort);
 
     res.json(paginatedResults);
   } catch (error) {
@@ -55,8 +56,9 @@ exports.getQuestionsAdmin = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const sort = req.query.sort || '-_id';
 
-    const paginatedResults = await paginateResults(Quiz, {}, page, limit);
+    const paginatedResults = await paginateResults(Quiz, {}, page, limit, null, null, sort);
 
     res.json(paginatedResults);
   } catch (error) {

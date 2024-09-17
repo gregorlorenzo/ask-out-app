@@ -6,10 +6,11 @@ export const useSlideshow = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [sort, setSort] = useState('-date');
 
   const getSlideshow = useQuery({
-    queryKey: ['slideshow', page, limit],
-    queryFn: () => slideshowService.getSlideshow(page, limit),
+    queryKey: ['slideshow', page, limit, sort],
+    queryFn: () => slideshowService.getSlideshow(page, limit, sort),
     keepPreviousData: true,
   });
 
@@ -46,6 +47,7 @@ export const useSlideshow = () => {
     totalItems: getSlideshow.data?.totalItems || 0,
     setPage,
     setLimit,
+    setSort,
     getSlideById,
     createSlide: createSlideMutation.mutate,
     updateSlide: updateSlideMutation.mutate,
