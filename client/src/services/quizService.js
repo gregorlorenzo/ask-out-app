@@ -31,5 +31,10 @@ export const quizService = {
   submitAnswer: async (questionId, userAnswer) => {
     const response = await api.post('/api/quiz/submit-answer', { questionId, userAnswer });
     return response.data;
-  }
+  },
+
+  submitQuiz: async (answers) => {
+    const response = await api.post('/api/quiz/submit-quiz', { answers });
+    return response.data;
+  },
 };

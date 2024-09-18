@@ -51,6 +51,34 @@ exports.submitAnswer = async (req, res) => {
   }
 };
 
+// Submit and check answer form sheets
+exports.submitQuiz = async (req, res) => {
+  try {
+    const { answers } = req.body;
+    let correctAnswers = 0;
+    let totalQuestions = answers.length;
+
+    for (let answer of answers) {
+      const question = await Quiz.findById(answer.questionId);
+      if (question && question.correctAnswer === answer.userAnswer) {
+        correctAnswers++;
+      }
+    }
+
+    const score = Math.round((correctAnswers / totalQuestions) * 100);
+    const passed = correctAnswers >= totalQuestions - 1;
+
+    res.json({
+      score,
+      correctAnswers,
+      totalQuestions,
+      passed
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get all quiz questions with correct answers (admin only)
 exports.getQuestionsAdmin = async (req, res) => {
   try {

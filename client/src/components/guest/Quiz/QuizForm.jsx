@@ -4,18 +4,20 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { motion } from 'framer-motion';
 
 const QuizForm = ({ question, options, onSubmit }) => {
-    const [selectedAnswer, setSelectedAnswer] = useState("");
+    const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
     useEffect(() => {
-        setSelectedAnswer("");
+        setSelectedAnswer(null);
         setIsSubmitted(false);
     }, [question]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        setIsSubmitted(true);
-        onSubmit(selectedAnswer);
+        if (selectedAnswer !== null) {
+            setIsSubmitted(true);
+            onSubmit(selectedAnswer);
+        }
     };
 
     return (
@@ -33,11 +35,11 @@ const QuizForm = ({ question, options, onSubmit }) => {
                                 whileTap={{ scale: 0.95 }}
                             >
                                 <Card
-                                    className={`cursor-pointer transition-all ${selectedAnswer === index.toString()
-                                            ? 'bg-white/40 ring-2 ring-white'
-                                            : 'bg-white/10 hover:bg-white/30'
+                                    className={`cursor-pointer transition-all ${selectedAnswer === index
+                                        ? 'bg-white/40 ring-2 ring-white'
+                                        : 'bg-white/10 hover:bg-white/30'
                                         }`}
-                                    onClick={() => setSelectedAnswer(index.toString())}
+                                    onClick={() => setSelectedAnswer(index)}
                                 >
                                     <CardContent className="p-4">
                                         <p className="text-center text-white font-semibold">{option}</p>
@@ -51,7 +53,7 @@ const QuizForm = ({ question, options, onSubmit }) => {
                     <Button
                         type="submit"
                         className="w-full bg-white/20 hover:bg-white/40 text-white border-2 border-white"
-                        disabled={!selectedAnswer || isSubmitted}
+                        disabled={selectedAnswer === null || isSubmitted}
                     >
                         {isSubmitted ? "Submitted" : "Submit Answer"}
                     </Button>

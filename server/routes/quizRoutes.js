@@ -13,5 +13,6 @@ router.get('/admin', adminAuth, quizController.getQuestionsAdmin);
 router.get('/', quizController.getQuestions);
 router.get('/:id', quizController.getQuestionById);
 router.post('/submit-answer', quizController.submitAnswer)
+router.post('/submit-quiz', quizController.submitQuiz);
 
 module.exports = router;

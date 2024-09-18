@@ -46,6 +46,11 @@ export const useQuiz = () => {
     mutationFn: ({ questionId, userAnswer }) => quizService.submitAnswer(questionId, userAnswer),
   });
 
+  // New mutation for submitting the entire quiz
+  const submitQuizMutation = useMutation({
+    mutationFn: quizService.submitQuiz,
+  });
+
   return {
     questions: getQuestions.data?.data || [],
     totalPages: getQuestions.data?.totalPages || 0,
@@ -59,8 +64,20 @@ export const useQuiz = () => {
     updateQuestion: updateQuestionMutation.mutate,
     deleteQuestion: deleteQuestionMutation.mutate,
     submitAnswer: submitAnswerMutation.mutate,
-    isLoading: getQuestions.isLoading || createQuestionMutation.isLoading || updateQuestionMutation.isLoading || deleteQuestionMutation.isLoading || submitAnswerMutation.isLoading,
-    error: getQuestions.error || createQuestionMutation.error || updateQuestionMutation.error || deleteQuestionMutation.error || submitAnswerMutation.error,
+    submitQuiz: submitQuizMutation.mutate,
+    quizResult: submitQuizMutation.data,
+    isLoading: getQuestions.isLoading ||
+      createQuestionMutation.isLoading ||
+      updateQuestionMutation.isLoading ||
+      deleteQuestionMutation.isLoading ||
+      submitAnswerMutation.isLoading ||
+      submitQuizMutation.isLoading,
+    error: getQuestions.error ||
+      createQuestionMutation.error ||
+      updateQuestionMutation.error ||
+      deleteQuestionMutation.error ||
+      submitAnswerMutation.error ||
+      submitQuizMutation.error,
     isAdmin: isAdmin(),
   };
 };
