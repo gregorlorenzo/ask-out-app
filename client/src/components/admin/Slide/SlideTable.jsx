@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
-import { useSlideshow } from '@/hooks/useSlideshow'
+import { useSlide } from '@/hooks/useSlide'
 import { MoreHorizontal, ArrowUpDown } from 'lucide-react'
 import {
     DropdownMenu,
@@ -28,7 +28,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export const SlideshowTable = ({ onEdit, onDelete }) => {
+export const SlideTable = ({ onEdit, onDelete }) => {
     const {
         slides,
         totalPages,
@@ -39,7 +39,7 @@ export const SlideshowTable = ({ onEdit, onDelete }) => {
         setSort,
         isLoading,
         error
-    } = useSlideshow()
+    } = useSlide()
     const [sorting, setSorting] = React.useState([])
     const [columnFilters, setColumnFilters] = React.useState([])
 
@@ -168,25 +168,33 @@ export const SlideshowTable = ({ onEdit, onDelete }) => {
                             ))}
                         </TableHeader>
                         <TableBody>
-                            {[...Array(5)].map((_, index) => {
-                                const row = table.getRowModel().rows[index]
-                                return (
-                                    <TableRow key={row ? row.id : `empty-${index}`} className="h-16">
-                                        {columns.map((column, cellIndex) => (
-                                            <TableCell key={`${index}-${cellIndex}`} className="py-0">
-                                                <div className="h-full flex items-center">
-                                                    {row
-                                                        ? flexRender(
-                                                            column.cell,
-                                                            row.getVisibleCells()[cellIndex].getContext()
-                                                        )
-                                                        : "\u00A0"}
-                                                </div>
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                )
-                            })}
+                            {slides.length ? (
+                                [...Array(5)].map((_, index) => {
+                                    const row = table.getRowModel().rows[index]
+                                    return (
+                                        <TableRow key={row ? row.id : `empty-${index}`} className="h-16">
+                                            {columns.map((column, cellIndex) => (
+                                                <TableCell key={`${index}-${cellIndex}`} className="py-0">
+                                                    <div className="h-full flex items-center">
+                                                        {row
+                                                            ? flexRender(
+                                                                column.cell,
+                                                                row.getVisibleCells()[cellIndex].getContext()
+                                                            )
+                                                            : "\u00A0"}
+                                                    </div>
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    )
+                                })
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No data available
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </div>

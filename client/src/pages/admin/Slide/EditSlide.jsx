@@ -1,12 +1,12 @@
 import React from 'react'
 import { useNavigate, useParams } from '@tanstack/react-router'
-import { useSlideshow } from '@/hooks/useSlideshow'
+import { useSlide } from '@/hooks/useSlide'
 import { useToast } from '@/hooks/use-toast'
-import { SlideshowForm } from '@/components/admin/Slideshow/SlideshowForm'
+import { SlideForm } from '@/components/admin/Slide/SlideForm'
 
 const EditSlide = () => {
     const slideId = useParams({ select: (params) => params.slideId })
-    const { updateSlide, getSlideById } = useSlideshow()
+    const { updateSlide, getSlideById } = useSlide()
     const { toast } = useToast()
     const navigate = useNavigate()
 
@@ -33,7 +33,7 @@ const EditSlide = () => {
                         title: 'Success',
                         description: 'Slide updated successfully',
                     })
-                    navigate({ to: '/dashboard/slideshow' })
+                    navigate({ to: '/dashboard/slide' })
                 },
                 onError: (error) => {
                     toast({
@@ -48,10 +48,10 @@ const EditSlide = () => {
 
     return (
         <div className="space-y-6">
-            <SlideshowForm
+            <SlideForm
                 initialData={slide}
                 onSubmit={handleEditSlide}
-                onCancel={() => navigate({ to: '/dashboard/slideshow' })}
+                onCancel={() => navigate({ to: '/dashboard/slide' })}
                 mode="edit"
             />
         </div>

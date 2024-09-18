@@ -4,8 +4,10 @@ const cors = require('cors');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const quizRoutes = require('./routes/quizRoutes');
-const slideshowRoutes = require('./routes/slideshowRoutes');
 const letterRoutes = require('./routes/letterRoutes');
+const slideRoutes = require('./routes/slideRoutes');
+const slideshowRoutes = require('./routes/slideshowRoutes');
+const mazeRoutes = require('./routes/mazeRoutes');
 
 dotenv.config();
 
@@ -25,8 +27,10 @@ app.use('/api/auth', authRoutes({
   JWT_SECRET: process.env.JWT_SECRET
 }));
 app.use('/api/quiz', quizRoutes);
-app.use('/api/slideshow', slideshowRoutes);
 app.use('/api/letters', letterRoutes);
+app.use('/api/slide', slideRoutes);
+app.use('/api/slideshow', slideshowRoutes);
+app.use('/api/maze', mazeRoutes);
 
 // Serve static files from the uploads directory in development
 if (process.env.NODE_ENV !== 'production') {

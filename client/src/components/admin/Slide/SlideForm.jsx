@@ -11,20 +11,20 @@ import { Textarea } from '@/components/ui/textarea'
 import ImageCropModal from '@/components/common/ImageCropModal'
 import { ensureAbsoluteUrl, getFileNameFromUrl } from '@/utils/helpers';
 
-const slideshowSchema = z.object({
+const slideSchema = z.object({
     date: z.date(),
     title: z.string().min(1, 'Title is required'),
     description: z.string().min(1, 'Description is required'),
     image: z.instanceof(File).optional().or(z.string()),
 })
 
-export const SlideshowForm = ({ initialData, onSubmit, onCancel, mode = 'create' }) => {
+export const SlideForm = ({ initialData, onSubmit, onCancel, mode = 'create' }) => {
     const [isImageCropOpen, setIsImageCropOpen] = useState(false)
     const [selectedImage, setSelectedImage] = useState(null)
     const [previewImage, setPreviewImage] = useState(initialData?.imageUrl || null)
 
     const form = useForm({
-        resolver: zodResolver(slideshowSchema),
+        resolver: zodResolver(slideSchema),
         defaultValues: {
             date: initialData?.date ? new Date(initialData.date) : new Date(),
             title: initialData?.title || '',

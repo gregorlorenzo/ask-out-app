@@ -138,7 +138,7 @@ export const QuizTable = ({ onEdit, onDelete }) => {
     manualSorting: true,
     pageCount: totalPages,
   })
-  
+
   if (isLoading) return (
     <Card className="w-full h-[600px]">
       <CardContent className="flex justify-center items-center h-full">
@@ -190,25 +190,33 @@ export const QuizTable = ({ onEdit, onDelete }) => {
               ))}
             </TableHeader>
             <TableBody>
-              {[...Array(5)].map((_, index) => {
-                const row = table.getRowModel().rows[index]
-                return (
-                  <TableRow key={row ? row.id : `empty-${index}`} className="h-16"> {/* Fixed height */}
-                    {columns.map((column, cellIndex) => (
-                      <TableCell key={`${index}-${cellIndex}`} className="py-0">
-                        <div className="h-full flex items-center">
-                          {row
-                            ? flexRender(
-                              column.cell,
-                              row.getVisibleCells()[cellIndex].getContext()
-                            )
-                            : "\u00A0"}
-                        </div>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                )
-              })}
+              {table.getRowModel().rows.length ? (
+                [...Array(5)].map((_, index) => {
+                  const row = table.getRowModel().rows[index]
+                  return (
+                    <TableRow key={row ? row.id : `empty-${index}`} className="h-16">
+                      {columns.map((column, cellIndex) => (
+                        <TableCell key={`${index}-${cellIndex}`} className="py-0">
+                          <div className="h-full flex items-center">
+                            {row
+                              ? flexRender(
+                                column.cell,
+                                row.getVisibleCells()[cellIndex].getContext()
+                              )
+                              : "\u00A0"}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  )
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No data available
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>

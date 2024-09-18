@@ -5,8 +5,8 @@ import { lazy } from 'react'
 import { adminRoutes } from './adminRoutes'
 import { guestRoutes } from './guestRoutes'
 
-const Login = lazy(() => import('../pages/Login'))
-const NotFound = lazy(() => import('../pages/NotFound'))
+const Login = lazy(() => import('@/pages/Login'))
+const NotFound = lazy(() => import('@/pages/NotFound'))
 
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,

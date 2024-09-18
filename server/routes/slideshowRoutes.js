@@ -2,16 +2,13 @@ const express = require('express');
 const router = express.Router();
 const slideshowController = require('../controllers/slideshowController');
 const { adminAuth } = require('../middleware/auth');
-const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() });
 
-// Public routes
-router.get('/', slideshowController.getSlideshow);
-router.get('/:id', slideshowController.getSlideById);
+// Public route
+router.get('/:id', slideshowController.getSlideshow);
 
 // Admin routes
-router.post('/', adminAuth, upload.single('image'), slideshowController.createSlide);
-router.put('/:id', adminAuth, upload.single('image'), slideshowController.updateSlide);
-router.delete('/:id', adminAuth, slideshowController.deleteSlide);
+router.post('/', adminAuth, slideshowController.createSlideshow);
+router.put('/:id', adminAuth, slideshowController.updateSlideshow);
+router.delete('/:id', adminAuth, slideshowController.deleteSlideshow);
 
 module.exports = router;

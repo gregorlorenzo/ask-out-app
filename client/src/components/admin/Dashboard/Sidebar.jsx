@@ -79,8 +79,8 @@ const Sidebar = () => {
           <SidebarItem icon={FileText} to="/dashboard/letter" isCollapsed={isCollapsed}>
             Letter
           </SidebarItem>
-          <SidebarItem icon={Presentation} to="/dashboard/slideshow" isCollapsed={isCollapsed}>
-            Slideshow
+          <SidebarItem icon={Presentation} to="/dashboard/slide" isCollapsed={isCollapsed}>
+            Slide
           </SidebarItem>
         </nav>
       </div>

@@ -12,7 +12,6 @@ router.get('/admin', adminAuth, quizController.getQuestionsAdmin);
 // Public routes
 router.get('/', quizController.getQuestions);
 router.get('/:id', quizController.getQuestionById);
-router.get('/submit-answer', quizController.submitAnswer)
-
+router.post('/submit-answer', quizController.submitAnswer)
 
 module.exports = router;

@@ -1,92 +1,69 @@
 const Slideshow = require('../models/Slideshow');
-const { uploadImage, deleteImage } = require('../utils/imageUploader');
-const { paginateResults } = require('../utils/helper')
+const { reorderSlides } = require('../utils/helper');
 
-// Get all slideshow items
 exports.getSlideshow = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const sort = req.query.sort || 'date';
-
-    const paginatedResults = await paginateResults(Slideshow, {}, page, limit, '', null, sort);
-
-    res.json(paginatedResults);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get a single slideshow item by ID
-exports.getSlideById = async (req, res) => {
-  try {
-    const slide = await Slideshow.findById(req.params.id);
-    if (!slide) {
-      return res.status(404).json({ message: 'Slide not found' });
+    const slideshow = await Slideshow.findById(req.params.id)
+      .populate('slides.slide');
+    if (!slideshow) {
+      return res.status(404).json({ message: 'Slideshow not found' });
     }
-    res.json(slide);
+    res.json(slideshow);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Create a new slideshow item (admin only)
-exports.createSlide = async (req, res) => {
+exports.createSlideshow = async (req, res) => {
   try {
-    const { url: imageUrl, key: imageKey } = await uploadImage(req.file);
-    const slide = new Slideshow({
-      date: req.body.date,
-      title: req.body.title,
-      description: req.body.description,
-      imageUrl,
-      imageKey
+    const slideshow = new Slideshow({
+      name: req.body.name,
+      slides: req.body.slides.map((slide, index) => ({
+        slide: slide.id,
+        position: index + 1
+      }))
     });
-    const newSlide = await slide.save();
-    res.status(201).json(newSlide);
+    const newSlideshow = await slideshow.save();
+    res.status(201).json(newSlideshow);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Update a slideshow item (admin only)
-exports.updateSlide = async (req, res) => {
+exports.updateSlideshow = async (req, res) => {
+    try {
+      let slideshow = await Slideshow.findById(req.params.id);
+      if (!slideshow) {
+        return res.status(404).json({ message: 'Slideshow not found' });
+      }
+      
+      slideshow.name = req.body.name || slideshow.name;
+      slideshow.slides = req.body.slides.map((slide, index) => ({
+        slide: slide.id,
+        position: index + 1
+      }));
+  
+      slideshow = await slideshow.save();
+      
+      // Use the reorderSlides function from helper
+      const reorderedSlideshow = await reorderSlides(Slideshow, slideshow._id);
+      
+      res.json(reorderedSlideshow);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  };
+
+exports.deleteSlideshow = async (req, res) => {
   try {
-    const slide = await Slideshow.findById(req.params.id);
-    if (!slide) {
-      return res.status(404).json({ message: 'Slide not found' });
+    const slideshow = await Slideshow.findById(req.params.id);
+    if (!slideshow) {
+      return res.status(404).json({ message: 'Slideshow not found' });
     }
 
-    slide.date = req.body.date || slide.date;
-    slide.title = req.body.title || slide.title;
-    slide.description = req.body.description || slide.description;
-
-    if (req.file) {
-      await deleteImage(slide.imageKey);
-      const { url: imageUrl, key: imageKey } = await uploadImage(req.file);
-      slide.imageUrl = imageUrl;
-      slide.imageKey = imageKey;
-    }
-
-    const updatedSlide = await slide.save();
-    res.json(updatedSlide);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// Delete a slideshow item (admin only)
-exports.deleteSlide = async (req, res) => {
-  try {
-    const slide = await Slideshow.findById(req.params.id);
-    if (!slide) {
-      return res.status(404).json({ message: 'Slide not found' });
-    }
-
-    await deleteImage(slide.imageKey);
     await Slideshow.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Slide deleted successfully' });
+    res.json({ message: 'Slideshow deleted successfully' });
   } catch (error) {
-    console.error('Error deleting slide:', error);
     res.status(500).json({ message: error.message });
   }
 };

@@ -8,9 +8,9 @@ const Quiz = lazy(() => import('@/pages/admin/Quiz/Quiz'))
 const Letter = lazy(() => import('@/pages/admin/Letter/Letter'))
 const AddLetter = lazy(() => import('@/pages/admin/Letter/AddLetter'))
 const EditLetter = lazy(() => import('@/pages/admin/Letter/EditLetter'))
-const Slideshow = lazy(() => import('@/pages/admin/Slideshow/Slideshow'))
-const AddSlide = lazy(() => import('@/pages/admin/Slideshow/AddSlide'))
-const EditSlide = lazy(() => import('@/pages/admin/Slideshow/EditSlide'))
+const Slide = lazy(() => import('@/pages/admin/Slide/Slide'))
+const AddSlide = lazy(() => import('@/pages/admin/Slide/AddSlide'))
+const EditSlide = lazy(() => import('@/pages/admin/Slide/EditSlide'))
 
 const dashboardRoute = createRoute({
   getParentRoute: () => protectedRoute,
@@ -48,21 +48,21 @@ const editLetterRoute = createRoute({
   component: EditLetter,
 });
 
-const slideshowRoute = createRoute({
+const slideRoute = createRoute({
   getParentRoute: () => dashboardRoute,
-  path: '/slideshow',
-  component: Slideshow,
+  path: '/slide',
+  component: Slide,
 });
 
 const addSlideRoute = createRoute({
   getParentRoute: () => dashboardRoute,
-  path: '/slideshow/add',
+  path: '/slide/add',
   component: AddSlide,
 });
 
 const editSlideRoute = createRoute({
   getParentRoute: () => dashboardRoute,
-  path: '/slideshow/$slideId',
+  path: '/slide/$slideId',
   component: EditSlide,
 });
 
@@ -73,7 +73,7 @@ export const adminRoutes = [
   letterRoute,
   addLetterRoute,
   editLetterRoute,
-  slideshowRoute,
+  slideRoute,
   addSlideRoute,
   editSlideRoute
 ];

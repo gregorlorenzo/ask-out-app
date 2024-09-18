@@ -26,4 +26,25 @@ const paginateResults = async (model, query = {}, page = 1, limit = 10, select =
     };
 };
 
-module.exports = { paginateResults };
+const reorderSlides = async (model, slideshowId) => {
+    const slideshow = await model.findById(slideshowId);
+    if (!slideshow) {
+        throw new Error('Slideshow not found');
+    }
+
+    if (!slideshow.slides || !Array.isArray(slideshow.slides)) {
+        throw new Error('Slideshow does not have a valid slides array');
+    }
+
+    slideshow.slides = slideshow.slides
+        .sort((a, b) => a.position - b.position)
+        .map((slide, index) => ({
+            ...slide,
+            position: index + 1
+        }));
+
+    await slideshow.save();
+    return slideshow;
+};
+
+module.exports = { paginateResults, reorderSlides };

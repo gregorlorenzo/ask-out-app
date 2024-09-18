@@ -1,11 +1,11 @@
 import React from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { useSlideshow } from '@/hooks/useSlideshow'
+import { useSlide } from '@/hooks/useSlide'
 import { useToast } from '@/hooks/use-toast'
-import { SlideshowForm } from '@/components/admin/Slideshow/SlideshowForm'
+import { SlideForm } from '@/components/admin/Slide/SlideForm'
 
 const AddSlide = () => {
-    const { createSlide } = useSlideshow()
+    const { createSlide } = useSlide()
     const { toast } = useToast()
     const navigate = useNavigate()
 
@@ -16,7 +16,7 @@ const AddSlide = () => {
                     title: 'Success',
                     description: 'Slide added successfully',
                 })
-                navigate({ to: '/dashboard/slideshow' })
+                navigate({ to: '/dashboard/slide' })
             },
             onError: (error) => {
                 toast({
@@ -30,7 +30,7 @@ const AddSlide = () => {
 
     return (
         <div className="space-y-6">
-            <SlideshowForm onSubmit={handleAddSlide} onCancel={() => navigate({ to: '/dashboard/slideshow' })} />
+            <SlideForm onSubmit={handleAddSlide} onCancel={() => navigate({ to: '/dashboard/slide' })} />
         </div>
     )
 }

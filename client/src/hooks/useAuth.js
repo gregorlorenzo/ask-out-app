@@ -11,7 +11,6 @@ export const useAuth = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries('user');
       const role = authService.getRole();
-      console.log(role)
       if (role === 'admin') {
         navigate({ to: '/dashboard' });
       } else {

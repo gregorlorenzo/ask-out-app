@@ -6,7 +6,7 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { s3Client } = require('./s3');
 
 const uploadToS3 = async (file) => {
-  const s3Key = `slideshow/${Date.now()}-${file.originalname}`;
+  const s3Key = `slide/${Date.now()}-${file.originalname}`;
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
     Key: s3Key,
@@ -27,7 +27,7 @@ const uploadToS3 = async (file) => {
 };
 
 const uploadToLocal = async (file) => {
-  const uploadsDir = path.join(__dirname, '..', 'uploads', 'slideshow');
+  const uploadsDir = path.join(__dirname, '..', 'uploads', 'slide');
   if (!fs.existsSync(uploadsDir)) {
     await fsPromises.mkdir(uploadsDir, { recursive: true });
   }
@@ -35,7 +35,7 @@ const uploadToLocal = async (file) => {
   const filename = `${Date.now()}-${file.originalname}`;
   const filePath = path.join(uploadsDir, filename);
   await fsPromises.writeFile(filePath, file.buffer);
-  return { url: `/uploads/slideshow/${filename}`, key: filePath };
+  return { url: `/uploads/slide/${filename}`, key: filePath };
 };
 
 const uploadImage = async (file) => {
