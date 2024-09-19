@@ -5,7 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import { SlideshowForm } from './SlideshowForm';
 
 export const SlideshowManager = () => {
-    const [slideshow, setSlideshow] = useState({ name: '', slides: [] });
+    const [slideshow, setSlideshow] = useState(null);
     const [availableSlides, setAvailableSlides] = useState([]);
     const {
         slides,
@@ -23,18 +23,32 @@ export const SlideshowManager = () => {
     } = useSlideshows();
 
     useEffect(() => {
+        if (getSlideshows.error) {
+            toast({
+                title: "Error fetching slideshows",
+                description: getSlideshows.error.message,
+                variant: "destructive"
+            });
+        }
+    }, [getSlideshows.error]);
+
+    useEffect(() => {
         setLimit(1000);
     }, [setLimit]);
 
     useEffect(() => {
         if (slideshows && slideshows.length > 0) {
             setSlideshow(slideshows[0]);
+        } else {
+            setSlideshow({ slides: [] });
         }
     }, [slideshows]);
 
     useEffect(() => {
         if (slides && slideshow) {
-            const slideshowSlideIds = slideshow.slides.map(slide => slide.slide);
+            const slideshowSlideIds = slideshow.slides.map(slide => {
+                return (slide.slide && slide.slide._id) || slide.slide || slide._id;
+            }).filter(Boolean);
             setAvailableSlides(slides.filter(slide => !slideshowSlideIds.includes(slide._id)));
         }
     }, [slides, slideshow]);
@@ -62,10 +76,12 @@ export const SlideshowManager = () => {
             const [removedSlide] = slideshow.slides.splice(source.index, 1);
             setSlideshow(prev => ({
                 ...prev,
-                slides: prev.slides.filter((_, index) => index !== source.index)
+                slides: prev.slides.filter((_, index) => index !== source.index).map((slide, index) => ({ ...slide, position: index + 1 }))
             }));
-            const originalSlide = slides.find(slide => slide._id === removedSlide.slide);
-            setAvailableSlides(prev => [...prev, originalSlide]);
+            const slideToAdd = slides.find(s => s._id === (removedSlide.slide && removedSlide.slide._id) || removedSlide.slide || removedSlide._id);
+            if (slideToAdd) {
+                setAvailableSlides(prev => [...prev, slideToAdd]);
+            }
         }
     };
 
@@ -75,7 +91,8 @@ export const SlideshowManager = () => {
                 await updateSlideshow({ id: slideshow._id, slideshowData: slideshow });
                 toast({ title: "Slideshow updated successfully" });
             } else {
-                await createSlideshow(slideshow);
+                const newSlideshow = await createSlideshow(slideshow);
+                setSlideshow(newSlideshow);
                 toast({ title: "Slideshow created successfully" });
             }
             getSlideshows.refetch();
@@ -88,12 +105,14 @@ export const SlideshowManager = () => {
         return <div>Error: {slidesError?.message || slideshowError?.message}</div>;
     }
 
+    if (getSlideshows.isLoading || slidesLoading || slideshowLoading) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <SlideshowForm
             slideshow={slideshow}
-            setSlideshow={setSlideshow}
             availableSlides={availableSlides}
-            setAvailableSlides={setAvailableSlides}
             slidesLoading={slidesLoading}
             slideshowLoading={slideshowLoading}
             handleSave={handleSave}

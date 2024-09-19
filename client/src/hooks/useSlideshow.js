@@ -7,7 +7,7 @@ export const useSlideshows = () => {
   const getSlideshows = useQuery({
     queryKey: ['slideshows'],
     queryFn: () => slideshowService.getSlideshows(),
-  });
+});
 
   const getSlideshow = (id) => useQuery({
     queryKey: ['slideshow', id],

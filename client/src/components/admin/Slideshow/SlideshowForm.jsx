@@ -8,9 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const SlideshowForm = ({
     slideshow,
-    setSlideshow,
     availableSlides,
-    setAvailableSlides,
     slidesLoading,
     slideshowLoading,
     handleSave,
@@ -33,7 +31,6 @@ export const SlideshowForm = ({
                                 <SlideList slides={availableSlides} isLoading={slidesLoading} />
                                 <SlideshowList
                                     slideshow={slideshow}
-                                    setSlideshow={setSlideshow}
                                     isLoading={slideshowLoading}
                                 />
                             </div>
@@ -41,7 +38,6 @@ export const SlideshowForm = ({
                         <TabsContent value="full" className="space-y-4">
                             <SlideshowList
                                 slideshow={slideshow}
-                                setSlideshow={setSlideshow}
                                 isLoading={slideshowLoading}
                                 fullWidth
                             />

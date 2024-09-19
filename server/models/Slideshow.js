@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 
 const slideshowSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true
-    },
     slides: [{
         slide: {
             type: mongoose.Schema.Types.ObjectId,

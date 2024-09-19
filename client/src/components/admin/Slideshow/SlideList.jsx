@@ -3,9 +3,9 @@ import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export const SlideList = ({ slides, isLoading }) => {
+export const SlideList = ({ slides, isLoading, fullWidth = false }) => {
     return (
-        <div className="w-1/2">
+        <div className={fullWidth ? "w-full" : "w-1/2"}>
             <h2 className="text-xl font-semibold mb-4">Available Slides</h2>
             <Droppable droppableId="slideList">
                 {(provided, snapshot) => (
@@ -21,24 +21,26 @@ export const SlideList = ({ slides, isLoading }) => {
                             ))
                         ) : (
                             slides.map((slide, index) => (
-                                <Draggable key={slide._id} draggableId={slide._id} index={index}>
-                                    {(provided, snapshot) => (
-                                        <Card
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            className={`cursor-move ${snapshot.isDragging ? 'shadow-lg' : ''
-                                                }`}
-                                        >
-                                            <CardContent className="p-4">
-                                                <h3 className="font-medium">{slide.title}</h3>
-                                                <p className="text-sm text-gray-500">
-                                                    {new Date(slide.date).toLocaleDateString()}
-                                                </p>
-                                            </CardContent>
-                                        </Card>
-                                    )}
-                                </Draggable>
+                                slide._id ? (
+                                    <Draggable key={slide._id} draggableId={slide._id} index={index}>
+                                        {(provided, snapshot) => (
+                                            <Card
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                className={`cursor-move ${snapshot.isDragging ? 'shadow-lg' : ''
+                                                    }`}
+                                            >
+                                                <CardContent className="p-4">
+                                                    <h3 className="font-medium">{slide.title}</h3>
+                                                    <p className="text-sm text-gray-500">
+                                                        {new Date(slide.date).toLocaleDateString()}
+                                                    </p>
+                                                </CardContent>
+                                            </Card>
+                                        )}
+                                    </Draggable>
+                                ) : null
                             ))
                         )}
                         {provided.placeholder}
