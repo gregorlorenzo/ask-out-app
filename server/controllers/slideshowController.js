@@ -1,6 +1,15 @@
 const Slideshow = require('../models/Slideshow');
 const { reorderSlides } = require('../utils/helper');
 
+exports.getAllSlideshows = async (req, res) => {
+  try {
+    const slideshows = await Slideshow.find().populate('slides.slide');
+    res.json(slideshows);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getSlideshow = async (req, res) => {
   try {
     const slideshow = await Slideshow.findById(req.params.id)

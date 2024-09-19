@@ -3,7 +3,8 @@ const router = express.Router();
 const slideshowController = require('../controllers/slideshowController');
 const { adminAuth } = require('../middleware/auth');
 
-// Public route
+// Public routes
+router.get('/', slideshowController.getAllSlideshows);
 router.get('/:id', slideshowController.getSlideshow);
 
 // Admin routes

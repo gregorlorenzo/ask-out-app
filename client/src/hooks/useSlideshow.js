@@ -4,6 +4,11 @@ import { slideshowService } from '../services/slideshowService';
 export const useSlideshows = () => {
   const queryClient = useQueryClient();
 
+  const getSlideshows = useQuery({
+    queryKey: ['slideshows'],
+    queryFn: () => slideshowService.getSlideshows(),
+  });
+
   const getSlideshow = (id) => useQuery({
     queryKey: ['slideshow', id],
     queryFn: () => slideshowService.getSlideshow(id),
@@ -12,7 +17,7 @@ export const useSlideshows = () => {
   const createSlideshowMutation = useMutation({
     mutationFn: slideshowService.createSlideshow,
     onSuccess: () => {
-      queryClient.invalidateQueries(['slideshow']);
+      queryClient.invalidateQueries(['slideshows']);
     },
   });
 
@@ -20,23 +25,26 @@ export const useSlideshows = () => {
     mutationFn: ({ id, slideshowData }) => slideshowService.updateSlideshow(id, slideshowData),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['slideshow', variables.id]);
+      queryClient.invalidateQueries(['slideshows']);
     },
   });
 
   const deleteSlideshowMutation = useMutation({
     mutationFn: slideshowService.deleteSlideshow,
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries(['slideshow']);
+      queryClient.invalidateQueries(['slideshows']);
       queryClient.removeQueries(['slideshow', id]);
     },
   });
 
   return {
+    slideshows: getSlideshows.data,
+    getSlideshows,
     getSlideshow,
     createSlideshow: createSlideshowMutation.mutate,
     updateSlideshow: updateSlideshowMutation.mutate,
     deleteSlideshow: deleteSlideshowMutation.mutate,
-    isLoading: createSlideshowMutation.isLoading || updateSlideshowMutation.isLoading || deleteSlideshowMutation.isLoading,
-    error: createSlideshowMutation.error || updateSlideshowMutation.error || deleteSlideshowMutation.error,
+    isLoading: getSlideshows.isLoading || createSlideshowMutation.isLoading || updateSlideshowMutation.isLoading || deleteSlideshowMutation.isLoading,
+    error: getSlideshows.error || createSlideshowMutation.error || updateSlideshowMutation.error || deleteSlideshowMutation.error,
   };
 };

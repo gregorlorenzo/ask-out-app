@@ -51,7 +51,7 @@ exports.submitAnswer = async (req, res) => {
   }
 };
 
-// Submit and check answer form sheets
+// Submit and check array of answers
 exports.submitQuiz = async (req, res) => {
   try {
     const { answers } = req.body;

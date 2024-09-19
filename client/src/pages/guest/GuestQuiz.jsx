@@ -1,4 +1,3 @@
-// src/pages/guest/GuestQuiz.jsx
 import React, { useState } from 'react';
 import { useQuiz } from '@/hooks/useQuiz';
 import QuizForm from '@/components/guest/Quiz/QuizForm';

@@ -47,10 +47,15 @@ exports.getStagesAdmin = async (req, res) => {
 
 // Create a new maze stage (admin only)
 exports.createStage = async (req, res) => {
+  const { number, difficulty, width, height } = req.body;
+
   const stage = new MazeStage({
-    number: req.body.number,
-    difficulty: req.body.difficulty,
-    mazeSize: req.body.mazeSize
+    number,
+    difficulty,
+    mazeSize: {
+      width,
+      height
+    }
   });
 
   try {
@@ -63,22 +68,32 @@ exports.createStage = async (req, res) => {
 
 // Update a maze stage (admin only)
 exports.updateStage = async (req, res) => {
+  const { number, difficulty, width, height } = req.body;
+
   try {
     const updatedStage = await MazeStage.findByIdAndUpdate(
       req.params.id,
       {
-        number: req.body.number,
-        difficulty: req.body.difficulty,
-        mazeSize: req.body.mazeSize
+        number,
+        difficulty,
+        mazeSize: {
+          width,
+          height
+        }
       },
-      { new: true }
+      { new: true, runValidators: true }
     );
+
     if (!updatedStage) {
       return res.status(404).json({ message: 'Stage not found' });
     }
+
     res.json(updatedStage);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'An error occurred while updating the stage' });
   }
 };
 

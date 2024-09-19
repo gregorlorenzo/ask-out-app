@@ -1,6 +1,11 @@
 import api from './apiConfig';
 
 export const slideshowService = {
+  getSlideshows: async () => {
+    const response = await api.get('/api/slideshow');
+    return response.data;
+  },
+
   getSlideshow: async (id) => {
     const response = await api.get(`/api/slideshow/${id}`);
     return response.data;

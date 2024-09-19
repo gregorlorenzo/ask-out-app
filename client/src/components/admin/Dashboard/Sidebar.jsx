@@ -3,12 +3,21 @@ import { Link, useLocation } from '@tanstack/react-router';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   LayoutDashboard,
   FileQuestion,
   FileText,
   Presentation,
   Menu,
   LogOut,
+  User,
+  Settings,
+  Projector,
 } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 
@@ -47,6 +56,45 @@ const SidebarItem = ({ icon: Icon, children, to, onClick, isCollapsed }) => {
   );
 };
 
+const GuestAccordionItem = ({ isCollapsed }) => {
+  if (isCollapsed) {
+    return (
+      <SidebarItem icon={User} to="/dashboard/guest" isCollapsed={isCollapsed} title="Guest (has sub-items)">
+        Guest
+      </SidebarItem>
+    );
+  }
+
+  return (
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="guest" className="border-b-0">
+        <AccordionTrigger
+          className={cn(
+            "flex items-center py-2 px-4 w-full justify-between transition-colors hover:bg-zinc-700/50 dark:hover:bg-zinc-700/50 hover:text-zinc-50 dark:hover:text-zinc-50",
+            "[&>svg]:ml-auto [&>svg]:h-4 [&>svg]:w-4 [&>svg]:shrink-0",
+            "hover:no-underline"
+          )}
+        >
+          <div className="flex items-center">
+            <User className="h-5 w-5 mr-2" />
+            <span>Guest</span>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent>
+          <div className="pl-6 space-y-1">
+            <SidebarItem icon={Settings} to="/dashboard/guest/maze-config" isCollapsed={isCollapsed}>
+              Maze Configuration
+            </SidebarItem>
+            <SidebarItem icon={Projector} to="/dashboard/guest/slideshow" isCollapsed={isCollapsed}>
+              Slideshow
+            </SidebarItem>
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+};
+
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { logout } = useAuth();
@@ -82,6 +130,7 @@ const Sidebar = () => {
           <SidebarItem icon={Presentation} to="/dashboard/slide" isCollapsed={isCollapsed}>
             Slide
           </SidebarItem>
+          <GuestAccordionItem isCollapsed={isCollapsed} />
         </nav>
       </div>
       <div className="p-4">

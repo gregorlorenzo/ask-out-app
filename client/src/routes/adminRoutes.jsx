@@ -11,6 +11,9 @@ const EditLetter = lazy(() => import('@/pages/admin/Letter/EditLetter'))
 const Slide = lazy(() => import('@/pages/admin/Slide/Slide'))
 const AddSlide = lazy(() => import('@/pages/admin/Slide/AddSlide'))
 const EditSlide = lazy(() => import('@/pages/admin/Slide/EditSlide'))
+const Guest = lazy(() => import('@/pages/admin/Guest/Guest'))
+const Slideshow = lazy(() => import('@/pages/admin/Guest/Slideshow/Slideshow'))
+const Maze = lazy(() => import('@/pages/admin/Guest/Maze/Maze'))
 
 const dashboardRoute = createRoute({
   getParentRoute: () => protectedRoute,
@@ -66,6 +69,25 @@ const editSlideRoute = createRoute({
   component: EditSlide,
 });
 
+const guestRoute = createRoute({
+  getParentRoute: () => dashboardRoute,
+  path: '/guest',
+  component: Guest,
+});
+
+const slideshowRoute = createRoute({
+  getParentRoute: () => dashboardRoute,
+  path: '/guest/slideshow',
+  component: Slideshow,
+});
+
+const mazeConfigRoute = createRoute({
+  getParentRoute: () => dashboardRoute,
+  path: '/guest/maze-config',
+  component: Maze,
+});
+
+
 export const adminRoutes = [
   dashboardRoute,
   dashboardIndexRoute,
@@ -75,5 +97,8 @@ export const adminRoutes = [
   editLetterRoute,
   slideRoute,
   addSlideRoute,
-  editSlideRoute
+  editSlideRoute,
+  guestRoute,
+  slideshowRoute,
+  mazeConfigRoute
 ];
