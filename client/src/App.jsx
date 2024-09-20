@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { Outlet } from '@tanstack/react-router'
 import { RouterDevtools } from './components/common/RouterDevtools'
 import { GuestProgressProvider } from '@/contexts/GuestProgressContext'
+import { Toaster } from "@/components/ui/toaster"
 
 const queryClient = new QueryClient()
 
@@ -14,6 +15,7 @@ function App() {
         <Suspense fallback={<div>Loading...</div>}>
           <Outlet />
         </Suspense>
+        <Toaster />
         <ReactQueryDevtools initialIsOpen={false} />
         <RouterDevtools />
       </GuestProgressProvider>

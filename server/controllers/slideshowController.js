@@ -1,107 +1,103 @@
 const Slideshow = require('../models/Slideshow');
-const { reorderSlides } = require('../utils/helper');
-
-exports.getAllSlideshows = async (req, res) => {
-  try {
-    const slideshows = await Slideshow.find().populate('slides.slide');
-
-    const formattedSlideshows = slideshows.map(slideshow => {
-      const slideshowObj = slideshow.toObject();
-
-      return {
-        ...slideshowObj,
-        slides: slideshowObj.slides
-          .sort((a, b) => a.position - b.position)
-          .map(slide => {
-            return {
-              ...slide.slide,
-              position: slide.position
-            };
-          })
-      };
-    });
-
-    res.json(formattedSlideshows);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const mongoose = require('mongoose');
 
 exports.getSlideshow = async (req, res) => {
   try {
-    const slideshow = await Slideshow.findById(req.params.id).populate('slides.slide');
+    const slideshow = await Slideshow.findOne().populate('slides.slide');
     if (!slideshow) {
-      return res.status(404).json({ message: 'Slideshow not found' });
+      return res.json({ slides: [] });
     }
-    const formattedSlideshow = {
-      ...slideshow._doc,
-      slides: slideshow.slides
-        .sort((a, b) => a.position - b.position)
-        .map(slide => ({
-          ...slide.slide._doc,
-          position: slide.position
-        }))
-    };
-    res.json(formattedSlideshow);
+    res.json(slideshow);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 exports.createSlideshow = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
+    const existingSlideshow = await Slideshow.findOne();
+    if (existingSlideshow) {
+      return res.status(400).json({ message: 'Slideshow already exists' });
+    }
+
+    const { slides } = req.body;
     const slideshow = new Slideshow({
-      slides: req.body.slides.map((slide, index) => ({
-        slide: slide._id,
+      slides: slides.map((slide, index) => ({
+        slide: slide.id,
         position: index + 1
       }))
     });
-    const newSlideshow = await slideshow.save();
-    const reorderedSlideshow = await reorderSlides(Slideshow, newSlideshow._id);
-    res.status(201).json(reorderedSlideshow);
+
+    await slideshow.save({ session });
+    await session.commitTransaction();
+
+    const createdSlideshow = await Slideshow.findById(slideshow._id).populate('slides.slide');
+    res.status(201).json(createdSlideshow);
   } catch (error) {
+    await session.abortTransaction();
     res.status(400).json({ message: error.message });
+  } finally {
+    session.endSession();
   }
 };
 
 exports.updateSlideshow = async (req, res) => {
   try {
-    let slideshow = await Slideshow.findById(req.params.id);
-    if (!slideshow) {
-      return res.status(404).json({ message: 'Slideshow not found' });
+    console.log('Updating slideshow. Request body:', req.body);
+    const { slides } = req.body;
+
+    if (!slides || !Array.isArray(slides)) {
+      throw new Error('Invalid slides data');
     }
 
-    slideshow.slides = req.body.slides.map((slide, index) => ({
-      slide: slide._id,
+    let slideshow = await Slideshow.findOne();
+
+    if (!slideshow) {
+      console.log('No slideshow found. Creating a new one.');
+      slideshow = new Slideshow();
+    }
+
+    console.log('Slideshow before update:', slideshow);
+
+    slideshow.slides = slides.map((slide, index) => ({
+      slide: slide.id,
       position: index + 1
     }));
 
+    console.log('Updated slideshow before save:', slideshow);
+
     await slideshow.save();
-    const reorderedSlideshow = await reorderSlides(Slideshow, slideshow._id);
-    const populatedSlideshow = await Slideshow.findById(reorderedSlideshow._id).populate('slides.slide');
 
-    const formattedSlideshow = {
-      ...populatedSlideshow._doc,
-      slides: populatedSlideshow.slides.map(slide => ({
-        ...slide.slide._doc,
-        position: slide.position
-      }))
-    };
+    const updatedSlideshow = await Slideshow.findById(slideshow._id).populate('slides.slide');
+    console.log('Updated/Created slideshow after save:', updatedSlideshow);
 
-    res.json(formattedSlideshow);
+    res.json(updatedSlideshow);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error updating/creating slideshow:', error);
+
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: 'Validation Error', details: error.errors });
+    }
+
+    console.error('Full error stack:', error.stack);
+
+    res.status(500).json({
+      message: 'Internal Server Error',
+      details: error.message,
+      stack: process.env.NODE_ENV === 'production' ? '🥞' : error.stack
+    });
   }
 };
 
 exports.deleteSlideshow = async (req, res) => {
   try {
-    const slideshow = await Slideshow.findById(req.params.id);
+    const slideshow = await Slideshow.findOneAndDelete();
     if (!slideshow) {
-      return res.status(404).json({ message: 'Slideshow not found' });
+      return res.status(404).json({ message: 'No slideshow found' });
     }
-
-    await Slideshow.findByIdAndDelete(req.params.id);
     res.json({ message: 'Slideshow deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });

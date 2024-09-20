@@ -1,13 +1,8 @@
 import api from './apiConfig';
 
 export const slideshowService = {
-  getSlideshows: async () => {
+  getSlideshow: async () => {
     const response = await api.get('/api/slideshow');
-    return response.data;
-  },
-
-  getSlideshow: async (id) => {
-    const response = await api.get(`/api/slideshow/${id}`);
     return response.data;
   },
 
@@ -16,13 +11,13 @@ export const slideshowService = {
     return response.data;
   },
 
-  updateSlideshow: async (id, slideshowData) => {
-    const response = await api.put(`/api/slideshow/${id}`, slideshowData);
+  updateSlideshow: async (slideshowData) => {
+    const response = await api.put('/api/slideshow', slideshowData);
     return response.data;
   },
 
-  deleteSlideshow: async (id) => {
-    const response = await api.delete(`/api/slideshow/${id}`);
+  deleteSlideshow: async () => {
+    const response = await api.delete('/api/slideshow');
     return response.data;
   }
 };
