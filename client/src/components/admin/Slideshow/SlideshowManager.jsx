@@ -1,36 +1,25 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import AvailableSlides from './AvailableSlides';
 import CurrentSlideshow from './CurrentSlideshow';
-import { useSlide } from '@/hooks/useSlide';
-import { useSlideshow } from '@/hooks/useSlideshow';
-import { useToast } from "@/hooks/use-toast"
+import { useSlideshowState } from '@/hooks/useSlideshowState';
+import { createNewSlideshow, updateSlideshowPositions, deleteSlideshowIfEmpty } from '@/utils/helpers';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 
 const SlideshowManager = () => {
-    const { slides: allSlides, isLoading: isLoadingSlides } = useSlide();
-    const { slideshow, updateSlideshow, isLoading: isLoadingSlideshow } = useSlideshow();
-    const [availableSlides, setAvailableSlides] = useState([]);
-    const [currentSlideshow, setCurrentSlideshow] = useState([]);
-    const { toast } = useToast();
-
-    const updateSlidesState = useCallback(() => {
-        if (allSlides) {
-            if (slideshow && slideshow.slides) {
-                const currentSlides = slideshow.slides.map(item => item.slide);
-                setCurrentSlideshow(currentSlides);
-                setAvailableSlides(allSlides.filter(slide => !currentSlides.some(s => s._id === slide._id)));
-            } else {
-                setAvailableSlides(allSlides);
-                setCurrentSlideshow([]);
-            }
-        }
-    }, [allSlides, slideshow]);
-
-    useEffect(() => {
-        updateSlidesState();
-    }, [updateSlidesState]);
+    const {
+        availableSlides,
+        currentSlideshow,
+        setAvailableSlides,
+        setCurrentSlideshow,
+        isLoadingSlides,
+        isLoadingSlideshow,
+        createSlideshow,
+        updateSlideshow,
+        deleteSlideshow,
+        toast
+    } = useSlideshowState();
 
     const onDragEnd = (result) => {
         const { source, destination } = result;
@@ -54,44 +43,15 @@ const SlideshowManager = () => {
         setAvailableSlides(newAvailable);
         setCurrentSlideshow(newCurrent);
 
-        const hasChanges = detectChanges(currentSlideshow, newCurrent);
-
-        if (hasChanges) {
-            updateSlideshowPositions(newCurrent);
-        }
-    };
-
-    const detectChanges = (oldSlideshow, newSlideshow) => {
-        if (oldSlideshow.length !== newSlideshow.length) return true;
-
-        return oldSlideshow.some((slide, index) => slide._id !== newSlideshow[index]._id);
-    };
-
-    const updateSlideshowPositions = (slides) => {
-        const updatedSlides = slides.map((slide, index) => ({
-            id: slide._id,
-            position: index + 1
-        }));
-
-        updateSlideshow(
-            { slides: updatedSlides },
-            {
-                onSuccess: () => {
-                    toast({
-                        title: "Success",
-                        description: "Slideshow updated successfully",
-                    });
-                },
-                onError: (error) => {
-                    toast({
-                        title: "Error",
-                        description: `Error updating slideshow: ${error.message}`,
-                        variant: "destructive",
-                    });
-                    updateSlidesState();
-                }
+        if (newCurrent.length > 0) {
+            if (currentSlideshow.length > 0) {
+                updateSlideshowPositions(newCurrent, updateSlideshow, toast);
+            } else {
+                createNewSlideshow(newCurrent, createSlideshow, toast);
             }
-        );
+        } else if (currentSlideshow.length > 0) {
+            deleteSlideshowIfEmpty(deleteSlideshow, toast);
+        }
     };
 
     if (isLoadingSlides || isLoadingSlideshow) {

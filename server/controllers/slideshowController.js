@@ -14,16 +14,21 @@ exports.getSlideshow = async (req, res) => {
 };
 
 exports.createSlideshow = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
+    console.log('Received request body:', req.body);
+
     const existingSlideshow = await Slideshow.findOne();
     if (existingSlideshow) {
+      console.log('Slideshow already exists');
       return res.status(400).json({ message: 'Slideshow already exists' });
     }
 
     const { slides } = req.body;
+    if (!slides || !Array.isArray(slides)) {
+      console.log('Invalid slides data');
+      return res.status(400).json({ message: 'Invalid slides data' });
+    }
+
     const slideshow = new Slideshow({
       slides: slides.map((slide, index) => ({
         slide: slide.id,
@@ -31,16 +36,21 @@ exports.createSlideshow = async (req, res) => {
       }))
     });
 
-    await slideshow.save({ session });
-    await session.commitTransaction();
+    console.log('Slideshow to be saved:', slideshow);
+
+    await slideshow.save();
 
     const createdSlideshow = await Slideshow.findById(slideshow._id).populate('slides.slide');
+    console.log('Created slideshow:', createdSlideshow);
+
     res.status(201).json(createdSlideshow);
   } catch (error) {
-    await session.abortTransaction();
-    res.status(400).json({ message: error.message });
-  } finally {
-    session.endSession();
+    console.error('Error creating slideshow:', error);
+    res.status(400).json({
+      message: 'Error creating slideshow',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'production' ? '🥞' : error.stack
+    });
   }
 };
 

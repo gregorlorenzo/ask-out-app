@@ -9,6 +9,10 @@ const SlideItem = ({ slide, index, listType }) => {
     const [isOpen, setIsOpen] = useState(false);
     const formattedDate = format(new Date(slide.date), 'MMM d, yyyy');
 
+    if (!slide || !slide._id) {
+        return null; // or some placeholder component
+    }
+
     return (
         <Draggable draggableId={slide._id} index={index}>
             {(provided, snapshot) => (
