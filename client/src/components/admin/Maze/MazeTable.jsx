@@ -88,7 +88,7 @@ export const MazeTable = ({ onEdit, onDelete }) => {
             ),
         },
         {
-            accessorKey: "mazeSize",
+            accessorKey: "mazeSize.width",
             header: ({ column }) => (
                 <Button
                     variant="ghost"
@@ -102,7 +102,7 @@ export const MazeTable = ({ onEdit, onDelete }) => {
             cell: ({ row }) => <div className="text-left pl-4">{row.original.mazeSize.width}</div>,
         },
         {
-            accessorKey: "mazeSize",
+            accessorKey: "mazeSize.height",
             header: ({ column }) => (
                 <Button
                     variant="ghost"

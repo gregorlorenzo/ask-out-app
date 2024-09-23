@@ -14,9 +14,14 @@ export const mazeService = {
     },
 
     createStage: async (stageData) => {
-        const response = await api.post('/api/maze', stageData);
-        return response.data;
-    },
+        try {
+          const response = await api.post('/api/maze', stageData);
+          return response.data;
+        } catch (error) {
+          console.error('Error creating stage:', error.response?.data || error.message);
+          throw error;
+        }
+      },
 
     updateStage: async (id, stageData) => {
         const response = await api.put(`/api/maze/${id}`, stageData);

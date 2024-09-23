@@ -64,7 +64,7 @@ export const useQuiz = () => {
     updateQuestion: updateQuestionMutation.mutate,
     deleteQuestion: deleteQuestionMutation.mutate,
     submitAnswer: submitAnswerMutation.mutate,
-    submitQuiz: submitQuizMutation.mutate,
+    submitQuiz: (answers) => submitQuizMutation.mutateAsync(answers),
     quizResult: submitQuizMutation.data,
     isLoading: getQuestions.isLoading ||
       createQuestionMutation.isLoading ||

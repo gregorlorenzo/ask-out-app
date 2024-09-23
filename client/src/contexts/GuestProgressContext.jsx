@@ -4,6 +4,7 @@ const GuestProgressContext = createContext();
 
 let currentProgress = {
     hasCompletedWelcome: false,
+    hasCompletedQuiz: false,
 };
 
 export const GuestProgressProvider = ({ children }) => {

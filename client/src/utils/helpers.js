@@ -103,3 +103,39 @@ export function deleteSlideshowIfEmpty(deleteSlideshow, toast) {
         }
     );
 }
+
+export function generateMaze(width, height) {
+    const maze = initializeMaze(width, height);
+    generateMazePath(maze, 1, 1);
+
+    // Set start and end points
+    maze[1][1] = 2; // Start
+    maze[height - 2][width - 2] = 3; // End
+
+    return maze;
+}
+
+function initializeMaze(width, height) {
+    return Array(height).fill().map(() => Array(width).fill(1));
+}
+
+function generateMazePath(maze, x, y) {
+    const directions = [
+        [0, -1], [1, 0], [0, 1], [-1, 0]
+    ].sort(() => Math.random() - 0.5);
+
+    for (const [dx, dy] of directions) {
+        const nx = x + dx * 2;
+        const ny = y + dy * 2;
+
+        if (isValidCell(maze, nx, ny)) {
+            maze[y + dy][x + dx] = 0;
+            maze[ny][nx] = 0;
+            generateMazePath(maze, nx, ny);
+        }
+    }
+}
+
+function isValidCell(maze, x, y) {
+    return x > 0 && y > 0 && x < maze[0].length - 1 && y < maze.length - 1 && maze[y][x] === 1;
+}

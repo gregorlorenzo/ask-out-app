@@ -25,7 +25,8 @@ exports.getStageById = async (req, res) => {
     }
     res.json(stage);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error in getStageById:', error);
+    res.status(500).json({ message: 'An error occurred while fetching the stage', error: error.message });
   }
 };
 
@@ -47,14 +48,14 @@ exports.getStagesAdmin = async (req, res) => {
 
 // Create a new maze stage (admin only)
 exports.createStage = async (req, res) => {
-  const { number, difficulty, width, height } = req.body;
+  const { number, difficulty, mazeSize } = req.body;
 
   const stage = new MazeStage({
     number,
     difficulty,
     mazeSize: {
-      width,
-      height
+      width: mazeSize.width,
+      height: mazeSize.height
     }
   });
 
@@ -62,6 +63,7 @@ exports.createStage = async (req, res) => {
     const newStage = await stage.save();
     res.status(201).json(newStage);
   } catch (error) {
+    console.error('Error creating stage:', error);
     res.status(400).json({ message: error.message });
   }
 };

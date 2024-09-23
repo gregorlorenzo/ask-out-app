@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from 'framer-motion';
+import { useNavigate } from '@tanstack/react-router';
 
 const QuizScore = ({ score, totalQuestions, passed, onRetry }) => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (passed) {
+            const timer = setTimeout(() => {
+                navigate({ to: '/guest/maze' });
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [passed, navigate]);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -22,12 +34,16 @@ const QuizScore = ({ score, totalQuestions, passed, onRetry }) => {
                     <p className="text-2xl font-semibold text-white mb-6">
                         {passed ? "Congratulations! You passed!" : "Sorry, you didn't pass. Try again!"}
                     </p>
-                    <Button
-                        onClick={onRetry}
-                        className="w-full bg-white/20 hover:bg-white/40 text-white border-2 border-white"
-                    >
-                        Retry Quiz
-                    </Button>
+                    {passed ? (
+                        <p className="text-white">Redirecting to maze in 3 seconds...</p>
+                    ) : (
+                        <Button
+                            onClick={onRetry}
+                            className="w-full bg-white/20 hover:bg-white/40 text-white border-2 border-white"
+                        >
+                            Retry Quiz
+                        </Button>
+                    )}
                 </CardContent>
             </Card>
         </motion.div>

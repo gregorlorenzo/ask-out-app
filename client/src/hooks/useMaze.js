@@ -16,9 +16,10 @@ export const useMaze = () => {
         keepPreviousData: true,
     });
 
-    const getStageById = (id) => useQuery({
+    const getStageById = (id, options = {}) => useQuery({
         queryKey: ['mazeStage', id],
         queryFn: () => mazeService.getStageById(id),
+        ...options,
     });
 
     const createStageMutation = useMutation({

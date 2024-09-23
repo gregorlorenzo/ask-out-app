@@ -3,12 +3,17 @@ import { useQuiz } from '@/hooks/useQuiz';
 import QuizForm from '@/components/guest/Quiz/QuizForm';
 import QuizScore from '@/components/guest/Quiz/QuizScore';
 import { Card, CardContent } from '@/components/ui/card';
+import { useNavigate } from '@tanstack/react-router';
+import { useGuestProgress } from '@/contexts/GuestProgressContext';
 
 const GuestQuiz = () => {
+  const navigate = useNavigate();
+  const { updateProgress } = useGuestProgress();
   const { questions, submitAnswer, submitQuiz, quizResult, isLoading, error } = useQuiz();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [localQuizResult, setLocalQuizResult] = useState(null);
 
   if (isLoading) {
     return <div>Loading quiz questions...</div>;
@@ -26,12 +31,17 @@ const GuestQuiz = () => {
     try {
       const newUserAnswers = [...userAnswers, { questionId: questions[currentQuestionIndex]._id, userAnswer }];
       setUserAnswers(newUserAnswers);
-
+  
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
         const result = await submitQuiz(newUserAnswers);
         setQuizCompleted(true);
+        setLocalQuizResult(result);
+  
+        if (result && result.passed) { // Add a check for result
+          updateProgress({ hasCompletedQuiz: true });
+        }
       }
     } catch (error) {
       console.error('Error submitting answer:', error);
@@ -42,14 +52,15 @@ const GuestQuiz = () => {
     setCurrentQuestionIndex(0);
     setUserAnswers([]);
     setQuizCompleted(false);
+    setLocalQuizResult(null);
   };
 
-  if (quizCompleted && quizResult) {
+  if (quizCompleted && localQuizResult) {
     return (
       <QuizScore
-        score={quizResult.score}
-        totalQuestions={quizResult.totalQuestions}
-        passed={quizResult.passed}
+        score={localQuizResult.score}
+        totalQuestions={questions.length}
+        passed={localQuizResult.passed}
         onRetry={handleRetry}
       />
     );
