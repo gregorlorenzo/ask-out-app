@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const mazeSizes = [
-    { label: 'Tiny', value: 'tiny', dimensions: { width: 8, height: 8 } },
     { label: 'Small', value: 'small', dimensions: { width: 16, height: 16 } },
     { label: 'Medium', value: 'medium', dimensions: { width: 24, height: 24 } },
     { label: 'Large', value: 'large', dimensions: { width: 32, height: 32 } },

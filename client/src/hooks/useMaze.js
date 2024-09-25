@@ -22,6 +22,13 @@ export const useMaze = () => {
         ...options,
     });
 
+    const useAllStages = () => {
+        return useQuery({
+            queryKey: ['allMazeStages'],
+            queryFn: () => mazeService.getStages(false, undefined, undefined, 'number', false),
+        });
+    };
+
     const createStageMutation = useMutation({
         mutationFn: mazeService.createStage,
         onSuccess: () => {
@@ -52,6 +59,7 @@ export const useMaze = () => {
         setLimit,
         setSort,
         getStageById,
+        allStages: useAllStages(),
         createStage: createStageMutation.mutate,
         updateStage: updateStageMutation.mutate,
         deleteStage: deleteStageMutation.mutate,

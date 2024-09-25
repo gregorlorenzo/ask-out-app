@@ -4,13 +4,17 @@ const { paginateResults } = require('../utils/helper');
 // Get all maze stages (public)
 exports.getStages = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const sort = req.query.sort || 'number'; // Default sort by stage number
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const sort = req.query.sort || 'number';
 
-    const paginatedResults = await paginateResults(MazeStage, {}, page, limit, null, null, sort);
-
-    res.json(paginatedResults);
+    if (page && limit) {
+      const paginatedResults = await paginateResults(MazeStage, {}, page, limit, null, null, sort);
+      res.json(paginatedResults);
+    } else {
+      const allStages = await MazeStage.find().sort(sort);
+      res.json(allStages);
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -70,7 +74,7 @@ exports.createStage = async (req, res) => {
 
 // Update a maze stage (admin only)
 exports.updateStage = async (req, res) => {
-  const { number, difficulty, width, height } = req.body;
+  const { number, difficulty, mazeSize } = req.body;
 
   try {
     const updatedStage = await MazeStage.findByIdAndUpdate(
@@ -79,8 +83,8 @@ exports.updateStage = async (req, res) => {
         number,
         difficulty,
         mazeSize: {
-          width,
-          height
+          width: mazeSize.width,
+          height: mazeSize.height
         }
       },
       { new: true, runValidators: true }
@@ -92,10 +96,11 @@ exports.updateStage = async (req, res) => {
 
     res.json(updatedStage);
   } catch (error) {
+    console.error('Full error object:', error);
     if (error.name === 'ValidationError') {
-      return res.status(400).json({ message: error.message });
+      return res.status(400).json({ message: error.message, details: error.errors });
     }
-    res.status(500).json({ message: 'An error occurred while updating the stage' });
+    res.status(500).json({ message: 'An error occurred while updating the stage', error: error.message });
   }
 };
 
