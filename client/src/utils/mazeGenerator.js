@@ -1,4 +1,4 @@
-export function generateMaze(height, width) {
+export function generateMaze(height, width, difficulty) {
     // Ensure odd dimensions for proper maze generation
     height = height % 2 === 0 ? height + 1 : height;
     width = width % 2 === 0 ? width + 1 : width;
@@ -31,8 +31,25 @@ export function generateMaze(height, width) {
         }
         for (const [nx, ny] of neighbors) {
             if (maze[ny][nx] === 1) {
-                maze[Math.floor((y + ny) / 2)][Math.floor((x + nx) / 2)] = 0;
-                carve(nx, ny);
+                // Adjust the probability of carving based on difficulty
+                let carveProb;
+                switch (difficulty) {
+                    case 'easy':
+                        carveProb = 0.8;
+                        break;
+                    case 'medium':
+                        carveProb = 0.6;
+                        break;
+                    case 'hard':
+                        carveProb = 0.4;
+                        break;
+                    default:
+                        carveProb = 0.6; // Default to medium
+                }
+                if (Math.random() < carveProb) {
+                    maze[Math.floor((y + ny) / 2)][Math.floor((x + nx) / 2)] = 0;
+                    carve(nx, ny);
+                }
             }
         }
     }
@@ -42,6 +59,18 @@ export function generateMaze(height, width) {
     // Set start and end points
     maze[startY][startX] = 2; // Start
     maze[height - 2][width - 2] = 3; // End
+
+    // Add some random walls for harder difficulties
+    if (difficulty === 'medium' || difficulty === 'hard') {
+        const extraWalls = difficulty === 'medium' ? width : width * 2;
+        for (let i = 0; i < extraWalls; i++) {
+            const wx = Math.floor(Math.random() * (width - 2)) + 1;
+            const wy = Math.floor(Math.random() * (height - 2)) + 1;
+            if (maze[wy][wx] === 0) {
+                maze[wy][wx] = 1;
+            }
+        }
+    }
 
     return maze;
 }

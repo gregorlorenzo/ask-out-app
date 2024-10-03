@@ -25,8 +25,6 @@ export const LetterForm = ({ initialData, onSubmit, onCancel, mode = 'create' })
         },
     })
 
-    console.log('Form values after initialization:', form.getValues()) // Add this line
-
     return (
         <Card className="w-full max-w-4xl mx-auto">
             <CardHeader className="border-b">

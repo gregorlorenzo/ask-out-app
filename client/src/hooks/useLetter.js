@@ -19,30 +19,49 @@ export const useLetter = () => {
   const getLetterById = (id) => useQuery({
     queryKey: ['letter', id],
     queryFn: () => letterService.getLetterById(id),
+    enabled: !!id,
+  });
+
+  const getFeaturedLetter = useQuery({
+    queryKey: ['featuredLetter'],
+    queryFn: () => letterService.getFeaturedLetter(),
+    staleTime: 1000 * 60 * 5,
   });
 
   const createLetterMutation = useMutation({
     mutationFn: letterService.createLetter,
     onSuccess: () => {
-      queryClient.invalidateQueries(['letters', isAdmin(), page, limit]);
+      queryClient.invalidateQueries(['letters', page, limit, sort]);
+      queryClient.invalidateQueries(['featuredLetter']);
     },
   });
 
   const updateLetterMutation = useMutation({
     mutationFn: ({ id, letterData }) => letterService.updateLetter(id, letterData),
     onSuccess: () => {
-      queryClient.invalidateQueries(['letters', isAdmin(), page, limit]);
+      queryClient.invalidateQueries(['letters', page, limit, sort]);
+      queryClient.invalidateQueries(['featuredLetter']);
     },
   });
 
   const deleteLetterMutation = useMutation({
     mutationFn: letterService.deleteLetter,
     onSuccess: () => {
-      queryClient.invalidateQueries(['letters', isAdmin(), page, limit]);
+      queryClient.invalidateQueries(['letters', page, limit, sort]);
+      queryClient.invalidateQueries(['featuredLetter']);
+    },
+  });
+
+  const featureLetterMutation = useMutation({
+    mutationFn: ({ id, featured }) => letterService.featureLetter(id, featured),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['letters', page, limit, sort]);
+      queryClient.invalidateQueries(['featuredLetter']);
     },
   });
 
   return {
+    // Letters data
     letters: getLetters.data?.data || [],
     totalPages: getLetters.data?.totalPages || 0,
     currentPage: getLetters.data?.currentPage || page,
@@ -50,12 +69,24 @@ export const useLetter = () => {
     setPage,
     setLimit,
     setSort,
+
+    // Single letter data
     getLetterById,
+
+    // Featured letter data
+    featuredLetter: getFeaturedLetter.data || null,
+
+    // Mutations
     createLetter: createLetterMutation.mutate,
     updateLetter: updateLetterMutation.mutate,
     deleteLetter: deleteLetterMutation.mutate,
-    isLoading: getLetters.isLoading || createLetterMutation.isLoading || updateLetterMutation.isLoading || deleteLetterMutation.isLoading,
-    error: getLetters.error || createLetterMutation.error || updateLetterMutation.error || deleteLetterMutation.error,
+    featureLetter: featureLetterMutation.mutate,
+
+    // Loading and error states
+    isLoading: getLetters.isLoading || createLetterMutation.isLoading || updateLetterMutation.isLoading || deleteLetterMutation.isLoading || getFeaturedLetter.isLoading || featureLetterMutation.isLoading,
+    error: getLetters.error || createLetterMutation.error || updateLetterMutation.error || deleteLetterMutation.error || (getFeaturedLetter.error && getFeaturedLetter.error.response?.status !== 404) || featureLetterMutation.error,
+
+    // Admin status
     isAdmin: isAdmin(),
   };
-}
+};

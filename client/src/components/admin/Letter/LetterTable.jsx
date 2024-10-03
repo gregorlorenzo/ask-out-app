@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react'
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import React, { useEffect, useState } from 'react';
 import {
     flexRender,
     getCoreRowModel,
     useReactTable,
     getSortedRowModel,
     getFilteredRowModel,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 import {
     Table,
     TableBody,
@@ -13,12 +15,13 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { Input } from "@/components/ui/input"
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
-import { useLetter } from '@/hooks/useLetter'
-import { MoreHorizontal, ArrowUpDown } from 'lucide-react'
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { useLetter } from '@/hooks/useLetter';
+import { useToast } from '@/hooks/use-toast';
+import { MoreHorizontal, ArrowUpDown } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -26,7 +29,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 export const LetterTable = ({ onEdit, onDelete }) => {
     const {
@@ -38,10 +41,13 @@ export const LetterTable = ({ onEdit, onDelete }) => {
         setLimit,
         setSort,
         isLoading,
-        error
-    } = useLetter()
-    const [sorting, setSorting] = React.useState([])
-    const [columnFilters, setColumnFilters] = React.useState([])
+        error,
+        featureLetter,
+    } = useLetter();
+    const [sorting, setSorting] = React.useState([]);
+    const [columnFilters, setColumnFilters] = React.useState([]);
+    const [loadingLetterId, setLoadingLetterId] = useState(null);
+    const { toast } = useToast();
 
     useEffect(() => {
         if (sorting.length > 0) {
@@ -49,6 +55,27 @@ export const LetterTable = ({ onEdit, onDelete }) => {
             setSort(`${desc ? '-' : ''}${id}`);
         }
     }, [sorting, setSort]);
+
+    const handleToggle = async (letter) => {
+        const { _id, featured } = letter;
+        setLoadingLetterId(_id);
+        try {
+            await featureLetter({ id: _id, featured: !featured });
+            toast({
+                title: 'Success',
+                description: featured ? 'Letter has been unfeatured successfully' : 'Letter has been featured successfully',
+            });
+        } catch (error) {
+            console.error('Error toggling featured status:', error);
+            toast({
+                title: 'Error',
+                description: `Failed to toggle featured status: ${error.message}`,
+                variant: 'destructive',
+            });
+        } finally {
+            setLoadingLetterId(null);
+        }
+    };
 
     const columns = [
         {
@@ -62,7 +89,7 @@ export const LetterTable = ({ onEdit, onDelete }) => {
                         Date
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
-                )
+                );
             },
             cell: ({ row }) => <div className="font-medium">{new Date(row.getValue("date")).toLocaleDateString()}</div>,
         },
@@ -72,10 +99,33 @@ export const LetterTable = ({ onEdit, onDelete }) => {
             cell: ({ row }) => <div>{row.getValue("title")}</div>,
         },
         {
+            accessorKey: "featured",
+            header: "Featured",
+            cell: ({ row }) => {
+                const letter = row.original;
+                const isFeatured = letter.featured;
+                const isLoading = loadingLetterId === letter._id;
+
+                return (
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id={`featured-switch-${letter._id}`}
+                            checked={isFeatured}
+                            onCheckedChange={() => handleToggle(letter)}
+                            disabled={isLoading}
+                        />
+                        <Label htmlFor={`featured-switch-${letter._id}`} className="select-none">
+                            {isFeatured ? 'Featured' : 'Not Featured'}
+                        </Label>
+                    </div>
+                );
+            },
+        },
+        {
             id: "actions",
             cell: ({ row }) => {
-                const letter = row.original
-                if (!letter || !letter._id) return null
+                const letter = row.original;
+                if (!letter || !letter._id) return null;
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -95,10 +145,10 @@ export const LetterTable = ({ onEdit, onDelete }) => {
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                )
+                );
             },
         },
-    ]
+    ];
 
     const table = useReactTable({
         data: letters,
@@ -115,7 +165,7 @@ export const LetterTable = ({ onEdit, onDelete }) => {
         manualPagination: true,
         manualSorting: true,
         pageCount: totalPages,
-    })
+    });
 
     if (isLoading) return (
         <Card className="w-full h-[600px]">
@@ -123,15 +173,19 @@ export const LetterTable = ({ onEdit, onDelete }) => {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </CardContent>
         </Card>
-    )
+    );
 
-    if (error) return (
-        <Card className="w-full h-[600px]">
-            <CardContent className="text-center py-4 text-destructive">
-                Error: {error.message}
-            </CardContent>
-        </Card>
-    )
+    if (error) {
+        if (error.response && error.response.status !== 404) {
+            return (
+                <Card className="w-full h-[600px]">
+                    <CardContent className="text-center py-4 text-destructive">
+                        Error: {error.message}
+                    </CardContent>
+                </Card>
+            );
+        }
+    }
 
     return (
         <Card className="w-full h-[600px] flex flex-col">
@@ -169,25 +223,20 @@ export const LetterTable = ({ onEdit, onDelete }) => {
                         </TableHeader>
                         <TableBody>
                             {letters.length ? (
-                                [...Array(5)].map((_, index) => {
-                                    const row = table.getRowModel().rows[index]
-                                    return (
-                                        <TableRow key={row ? row.id : `empty-${index}`} className="h-16">
-                                            {columns.map((column, cellIndex) => (
-                                                <TableCell key={`${index}-${cellIndex}`} className="py-0">
-                                                    <div className="h-full flex items-center">
-                                                        {row
-                                                            ? flexRender(
-                                                                column.cell,
-                                                                row.getVisibleCells()[cellIndex].getContext()
-                                                            )
-                                                            : "\u00A0"}
-                                                    </div>
-                                                </TableCell>
-                                            ))}
-                                        </TableRow>
-                                    )
-                                })
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow key={row.id} className="h-16">
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id} className="py-0">
+                                                <div className="h-full flex items-center">
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={columns.length} className="h-24 text-center">
@@ -223,5 +272,5 @@ export const LetterTable = ({ onEdit, onDelete }) => {
                 </div>
             </CardFooter>
         </Card>
-    )
-}
+    );
+};

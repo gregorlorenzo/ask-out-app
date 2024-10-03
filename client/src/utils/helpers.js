@@ -103,3 +103,24 @@ export function deleteSlideshowIfEmpty(deleteSlideshow, toast) {
         }
     );
 }
+
+export function formatDate(isoDate, options = {}, locale = 'en-US') {
+    if (!isoDate) return 'Invalid Date';
+
+    const dateObject = new Date(isoDate);
+    if (isNaN(dateObject.getTime())) {
+        return 'Invalid Date';
+    }
+
+    // Default options if none are provided
+    const defaultOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    };
+
+    // Use provided options or default options
+    const formatOptions = Object.keys(options).length ? options : defaultOptions;
+
+    return dateObject.toLocaleDateString(locale, formatOptions);
+}

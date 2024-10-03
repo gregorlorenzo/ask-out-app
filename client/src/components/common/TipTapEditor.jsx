@@ -3,6 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
+import HardBreak from '@tiptap/extension-hard-break'
 import { Button } from "@/components/ui/button"
 import {
   Bold,
@@ -12,7 +13,8 @@ import {
   ListOrdered,
   AlignLeft,
   AlignCenter,
-  AlignRight
+  AlignRight,
+  WrapText
 } from 'lucide-react'
 
 const MenuBar = ({ editor }) => {
@@ -94,6 +96,15 @@ const MenuBar = ({ editor }) => {
       >
         <AlignRight className="h-4 w-4" />
       </Button>
+      {/* Add HardBreak Button */}
+      <Button
+        type="button"
+        onClick={() => editor.chain().focus().setHardBreak().run()}
+        size="icon"
+        variant="outline"
+      >
+        <WrapText className="h-4 w-4" />
+      </Button>
     </div>
   )
 }
@@ -105,6 +116,9 @@ const TiptapEditor = ({ content, onChange, className }) => {
       Underline,
       TextAlign.configure({
         types: ['heading', 'paragraph'],
+      }),
+      HardBreak.configure({
+        keepMarks: true,
       }),
     ],
     content: content,
@@ -125,6 +139,5 @@ const TiptapEditor = ({ content, onChange, className }) => {
     </div>
   )
 }
-
 
 export default TiptapEditor

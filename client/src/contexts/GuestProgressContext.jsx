@@ -6,6 +6,8 @@ let currentProgress = {
     hasCompletedWelcome: false,
     hasCompletedQuiz: false,
     hasCompletedMaze: false,
+    hasCompletedSlideshow: false,
+    hasCompletedLetter: false,
 };
 
 export const GuestProgressProvider = ({ children }) => {
