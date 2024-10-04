@@ -53,6 +53,7 @@ const RetroMazeConsole = React.memo(({ stage, onComplete, currentStageIndex, tot
                 case 'down': newY = Math.min(maze.length - 1, y + 1); break;
                 case 'left': newX = Math.max(0, x - 1); break;
                 case 'right': newX = Math.min(maze[0].length - 1, x + 1); break;
+                default: break;
             }
 
             if (maze[newY] && maze[newY][newX] !== 1) {
@@ -74,10 +75,24 @@ const RetroMazeConsole = React.memo(({ stage, onComplete, currentStageIndex, tot
     useEffect(() => {
         const handleKeyDown = (e) => {
             switch (e.key) {
-                case 'ArrowUp': movePlayer('up'); break;
-                case 'ArrowDown': movePlayer('down'); break;
-                case 'ArrowLeft': movePlayer('left'); break;
-                case 'ArrowRight': movePlayer('right'); break;
+                case 'ArrowUp':
+                    e.preventDefault(); // Prevent scrolling
+                    movePlayer('up');
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault(); // Prevent scrolling
+                    movePlayer('down');
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault(); // Prevent scrolling
+                    movePlayer('left');
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault(); // Prevent scrolling
+                    movePlayer('right');
+                    break;
+                default:
+                    break;
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -109,31 +124,33 @@ const RetroMazeConsole = React.memo(({ stage, onComplete, currentStageIndex, tot
     ), [maze, playerPosition, timeElapsed, moveCount, currentStageIndex, totalStages, gameState, onContinue]);
 
     return (
-        <Card className="bg-gray-900 max-w-md mx-auto border-4 border-blue-500">
+        <Card className="bg-zinc-800 w-full max-w-md mx-auto border-4 border-zinc-700 rounded-xl shadow-lg">
             <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white text-center">Maze Challenge</CardTitle>
+                <CardTitle className="text-2xl font-bold text-zinc-100 text-center">Maze Challenge</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center">
-                <div className="bg-gray-800 p-4 rounded-2xl mb-4 w-full border-2 border-blue-400">
+                <div className="bg-zinc-700 p-4 rounded-2xl mb-6 w-full border-2 border-zinc-700">
                     {memoizedMazeScreen}
                 </div>
                 {gameState === 'playing' && (
                     <>
                         <DPad onMove={movePlayer} activeDirection={activeDirection} />
-                        <div className="flex justify-center mt-4 space-x-4">
+                        <div className="flex justify-center mt-6 space-x-6">
                             <Button
                                 onClick={handleRegenerate}
-                                className="w-10 h-10 rounded-full bg-gray-700 border-2 border-blue-400 p-0"
+                                className="w-12 h-12 rounded-full bg-zinc-700 border-2 border-zinc-600 p-0"
                                 variant="ghost"
+                                aria-label="Regenerate Maze"
                             >
-                                <RefreshCw className="w-6 h-6 text-blue-300" />
+                                <RefreshCw className="w-6 h-6 text-zinc-300" />
                             </Button>
                             <Button
                                 onClick={handleReset}
-                                className="w-10 h-10 rounded-full bg-gray-700 border-2 border-blue-400 p-0"
+                                className="w-12 h-12 rounded-full bg-zinc-700 border-2 border-zinc-600 p-0"
                                 variant="ghost"
+                                aria-label="Reset Maze"
                             >
-                                <RotateCcw className="w-6 h-6 text-blue-300" />
+                                <RotateCcw className="w-6 h-6 text-zinc-300" />
                             </Button>
                         </div>
                     </>

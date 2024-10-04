@@ -7,9 +7,9 @@ const DPad = ({ onMove, activeDirection }) => {
     const [intervalId, setIntervalId] = useState(null);
 
     const buttonClass = (direction) => `
-        ${activeDirection === direction ? 'bg-blue-600' : 'bg-blue-700'} 
-        rounded-full focus:outline-none focus:ring-2 focus:ring-white transition-colors
-        flex items-center justify-center absolute w-10 h-10 p-0
+        ${activeDirection === direction ? 'bg-zinc-700' : 'bg-zinc-800'} 
+        rounded-full focus:outline-none focus:ring-2 focus:ring-zinc-600 transition-colors
+        flex items-center justify-center absolute w-12 h-12 p-0
     `;
 
     const startMoving = useCallback((direction) => {
@@ -48,45 +48,58 @@ const DPad = ({ onMove, activeDirection }) => {
     };
 
     return (
-        <div className="relative w-36 h-36 bg-blue-800 rounded-full flex items-center justify-center">
-            <div className="w-32 h-32 bg-blue-700 rounded-full flex items-center justify-center relative">
+        <div className="relative w-40 h-40 bg-zinc-800 rounded-full flex items-center justify-center">
+            <div className="w-36 h-36 bg-zinc-900 rounded-full flex items-center justify-center relative">
+                {/* Up Button */}
                 <Button
                     onMouseDown={() => handleMouseDown('up')}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseLeave}
-                    className={`${buttonClass('up')} top-1 left-1/2 transform -translate-x-1/2`}
+                    className={`${buttonClass('up')} top-3 left-1/2 transform -translate-x-1/2`}
                     variant="ghost"
+                    aria-label="Move Up"
                 >
-                    <ArrowUp className="w-6 h-6 text-white" />
+                    <ArrowUp className="w-6 h-6 text-zinc-100" />
                 </Button>
+
+                {/* Down Button */}
                 <Button
                     onMouseDown={() => handleMouseDown('down')}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseLeave}
-                    className={`${buttonClass('down')} bottom-1 left-1/2 transform -translate-x-1/2`}
+                    className={`${buttonClass('down')} bottom-3 left-1/2 transform -translate-x-1/2`}
                     variant="ghost"
+                    aria-label="Move Down"
                 >
-                    <ArrowDown className="w-6 h-6 text-white" />
+                    <ArrowDown className="w-6 h-6 text-zinc-100" />
                 </Button>
+
+                {/* Left Button */}
                 <Button
                     onMouseDown={() => handleMouseDown('left')}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseLeave}
-                    className={`${buttonClass('left')} left-1 top-1/2 transform -translate-y-1/2`}
+                    className={`${buttonClass('left')} left-3 top-1/2 transform -translate-y-1/2`}
                     variant="ghost"
+                    aria-label="Move Left"
                 >
-                    <ArrowLeft className="w-6 h-6 text-white" />
+                    <ArrowLeft className="w-6 h-6 text-zinc-100" />
                 </Button>
+
+                {/* Right Button */}
                 <Button
                     onMouseDown={() => handleMouseDown('right')}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseLeave}
-                    className={`${buttonClass('right')} right-1 top-1/2 transform -translate-y-1/2`}
+                    className={`${buttonClass('right')} right-3 top-1/2 transform -translate-y-1/2`}
                     variant="ghost"
+                    aria-label="Move Right"
                 >
-                    <ArrowRight className="w-6 h-6 text-white" />
+                    <ArrowRight className="w-6 h-6 text-zinc-100" />
                 </Button>
-                <div className="absolute inset-0 m-auto w-8 h-8 bg-blue-800 rounded-full"></div>
+
+                {/* Center Dot */}
+                <div className="absolute inset-0 m-auto w-10 h-10 bg-zinc-800 rounded-full"></div>
             </div>
         </div>
     );

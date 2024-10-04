@@ -8,6 +8,7 @@ let currentProgress = {
     hasCompletedMaze: false,
     hasCompletedSlideshow: false,
     hasCompletedLetter: false,
+    hasCompletedAskOut: false,
 };
 
 export const GuestProgressProvider = ({ children }) => {

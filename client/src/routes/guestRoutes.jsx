@@ -9,6 +9,7 @@ const GuestQuiz = lazy(() => import('@/pages/guest/GuestQuiz'))
 const GuestMaze = lazy(() => import('@/pages/guest/GuestMaze'))
 const GuestSlideshow = lazy(() => import('@/pages/guest/GuestSlideshow'))
 const GuestLetter = lazy(() => import('@/pages/guest/GuestLetter'))
+const GuestAskOut = lazy(() => import('@/pages/guest/GuestAskOut'))
 
 const guestRoute = createRoute({
   getParentRoute: () => protectedRoute,
@@ -82,6 +83,21 @@ const guestLetterRoute = createRoute({
   },
 });
 
+const guestAskOutRoute = createRoute({
+  getParentRoute: () => guestRoute,
+  path: '/ask-out',
+  component: GuestAskOut,
+  loader: async () => {
+    const progress = getGuestProgress();
+    if (!progress.hasCompletedLetter) {
+      throw redirect({
+        to: '/guest/letter',
+      });
+    }
+    return null;
+  }
+});
+
 export const guestRoutes = [
   guestRoute,
   guestWelcomeRoute,
@@ -89,4 +105,5 @@ export const guestRoutes = [
   guestMazeRoute,
   guestSlideshowRoute,
   guestLetterRoute,
+  guestAskOutRoute,
 ];

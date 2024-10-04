@@ -1,15 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
+import { buttonHover } from '@/utils/animationVariants';
 
 export const StartButton = ({ onClick }) => (
     <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        variants={buttonHover}
+        whileHover="hover"
+        whileTap="tap"
+        className="w-full sm:w-auto mt-2 sm:mt-4" 
     >
         <Button
             onClick={onClick}
-            className="px-6 py-3 sm:px-8 sm:py-4 bg-yellow-400 text-purple-800 rounded-full text-lg sm:text-xl font-bold shadow-lg hover:bg-yellow-300 transition-colors duration-300"
+            variant="primary"
+            className="w-full sm:w-auto px-5 py-3 sm:px-6 sm:py-4 bg-zinc-800 text-zinc-100 rounded-full text-base sm:text-lg font-semibold shadow transition-colors duration-300"
         >
             Let's Get Started!
         </Button>

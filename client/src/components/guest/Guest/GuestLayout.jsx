@@ -1,21 +1,32 @@
 import React from 'react';
-import { Outlet } from '@tanstack/react-router';
-import { motion } from 'framer-motion';
+import { Outlet, useLocation } from '@tanstack/react-router';
+import { motion, AnimatePresence } from 'framer-motion';
 import GuestHeader from './GuestHeader';
+import { fadeIn } from '@/utils/animationVariants';
 
 const GuestLayout = () => {
+    const location = useLocation();
+
     return (
-        <motion.div 
-            className="guest-layout flex flex-col min-h-screen bg-gradient-to-b from-purple-400 to-pink-500"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-        >
+        <div className="flex flex-col min-h-screen bg-zinc-900 text-zinc-100">
             <GuestHeader />
-            <main className="flex-grow flex items-center justify-center p-4">
-                <Outlet />
+            <main className="flex-grow flex items-center justify-center relative overflow-hidden">
+                <div className="w-full max-w-4xl">
+                    <AnimatePresence mode="wait" initial={false}>
+                        <motion.div
+                            key={location.pathname}
+                            variants={fadeIn}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            transition={{ duration: 0.5, ease: 'easeInOut' }}
+                        >
+                            <Outlet />
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
             </main>
-        </motion.div>
+        </div>
     );
 };
 
