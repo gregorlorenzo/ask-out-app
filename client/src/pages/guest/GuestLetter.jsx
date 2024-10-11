@@ -17,7 +17,6 @@ const GuestLetter = () => {
 
   const handleContinue = () => {
     updateProgress({ hasCompletedLetter: true });
-    console.log('Navigating to /guest/ask-out');
     navigate({ to: '/guest/ask-out' });
   };
 
@@ -53,7 +52,7 @@ const GuestLetter = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="flex items-center justify-center min-h-screen bg-zinc-900 p-4 sm:p-6 lg:p-8"
+      className="flex items-center justify-center min-h-screen bg-zinc-900 p-4 sm:p-6 lg:p-8 overflow-hidden"
     >
       <Card className="w-full max-w-3xl bg-zinc-800/20 backdrop-blur-lg border-none shadow-lg overflow-hidden rounded-lg">
         <CardContent className="p-6">
@@ -64,9 +63,6 @@ const GuestLetter = () => {
               onClick={handleContinue}
               className="px-6 py-2 bg-zinc-700 text-zinc-100 hover:bg-zinc-600 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-zinc-500"
               aria-label="Continue to Next Step"
-              as={motion.button}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               Continue
             </Button>

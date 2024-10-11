@@ -12,7 +12,7 @@ export const useMaze = () => {
 
     const getStages = useQuery({
         queryKey: ['mazeStages', isAdmin(), page, limit, sort],
-        queryFn: () => mazeService.getStages(isAdmin(), page, limit, sort),
+        queryFn: () => mazeService.getStages(isAdmin(), page, limit, sort, !isAdmin()),
         keepPreviousData: true,
     });
 
@@ -51,7 +51,7 @@ export const useMaze = () => {
     });
 
     return {
-        stages: getStages.data?.data || [],
+        stages: getStages.data?.data || getStages.data || [],
         totalPages: getStages.data?.totalPages || 0,
         currentPage: getStages.data?.currentPage || page,
         totalItems: getStages.data?.totalItems || 0,

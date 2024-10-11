@@ -1,53 +1,85 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
+import MazeGame from '@/components/guest/Maze/MazeGame';
 import { useMaze } from '@/hooks/useMaze';
-import RetroMazeConsole from '@/components/guest/Maze/RetroMazeConsole';
+import { motion } from 'framer-motion';
+import { fadeIn } from '@/utils/animationVariants';
 import { useGuestProgress } from '@/contexts/GuestProgressContext';
 import { useNavigate } from '@tanstack/react-router';
 
 const GuestMaze = () => {
+    const { stages, isLoading, error } = useMaze();
+    const { progress, updateProgress } = useGuestProgress();
     const navigate = useNavigate();
-    const { updateProgress } = useGuestProgress();
-    const { allStages, isLoading, error } = useMaze();
-    const [currentStageIndex, setCurrentStageIndex] = useState(0);
 
-    const handleMazeComplete = useCallback((moveCount, timeElapsed) => {
-        if (allStages.data && currentStageIndex < allStages.data.length - 1) {
-            setCurrentStageIndex(prevIndex => prevIndex + 1);
-        } else {
-            updateProgress({ hasCompletedMaze: true });
-        }
-    }, [currentStageIndex, allStages, updateProgress]);
+    if (isLoading) {
+        return (
+            <motion.div
+                className="flex items-center justify-center p-4 sm:p-6"
+                variants={fadeIn}
+                initial="hidden"
+                animate="visible"
+            >
+                <div className="text-zinc-100 text-base sm:text-lg">Loading maze stages...</div>
+            </motion.div>
+        );
+    }
 
-    const handleContinue = useCallback(() => {
+    if (error) {
+        return (
+            <motion.div
+                className="flex items-center justify-center p-4 sm:p-6"
+                variants={fadeIn}
+                initial="hidden"
+                animate="visible"
+            >
+                <div className="text-red-500 text-base sm:text-lg">Error loading maze stages: {error.message}</div>
+            </motion.div>
+        );
+    }
+
+    const sortedStages = [...stages].sort((a, b) => a.number - b.number);
+
+    const currentStage =
+        sortedStages.find(stage => !progress[`hasCompletedStage${stage.number}`]) || sortedStages[0];
+
+    if (!currentStage) {
+        return (
+            <motion.div
+                className="flex items-center justify-center p-4 sm:p-6"
+                variants={fadeIn}
+                initial="hidden"
+                animate="visible"
+            >
+                <div className="text-zinc-100 text-base sm:text-lg">No maze stages available.</div>
+            </motion.div>
+        );
+    }
+
+    const handleGameComplete = async (stageNumber) => {
+        console.log(`Stage ${stageNumber} completed.`);
+        await updateProgress({
+            [`hasCompletedStage${stageNumber}`]: true,
+            hasCompletedMaze: true
+        });
+        console.log('Progress updated, navigating to slideshow');
         navigate({ to: '/guest/slideshow' });
-    }, [navigate]);
-
-    if (isLoading) return (
-        <div className="flex items-center justify-center h-screen bg-zinc-900 text-zinc-100">
-            Loading maze challenges...
-        </div>
-    );
-    if (error) return (
-        <div className="flex items-center justify-center h-screen bg-zinc-900 text-red-500">
-            Error loading maze: {error.message}
-        </div>
-    );
-    if (!allStages.data || allStages.data.length === 0) return (
-        <div className="flex items-center justify-center h-screen bg-zinc-900 text-zinc-100">
-            No maze challenges available.
-        </div>
-    );
+    };
 
     return (
-        <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto mt-8 px-4 sm:px-6 lg:px-8">
-            <RetroMazeConsole
-                stage={allStages.data[currentStageIndex]}
-                onComplete={handleMazeComplete}
-                onContinue={handleContinue}
-                currentStageIndex={currentStageIndex}
-                totalStages={allStages.data.length}
+        <motion.div
+            className="flex flex-col items-center w-full h-full"
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+        >
+            <MazeGame
+                width={currentStage.mazeSize.width}
+                height={currentStage.mazeSize.height}
+                stage={currentStage.number}
+                totalStages={sortedStages.length}
+                onComplete={handleGameComplete}
             />
-        </div>
+        </motion.div>
     );
 };
 

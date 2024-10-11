@@ -11,7 +11,7 @@ const QuizScore = ({ score, totalQuestions, passed, onRetry }) => {
     useEffect(() => {
         if (passed) {
             const timer = setTimeout(() => {
-                navigate({ to: '/guest/maze' });
+                navigate({ to: '/guest/slideshow' });
             }, 3000);
             return () => clearTimeout(timer);
         }
@@ -38,7 +38,7 @@ const QuizScore = ({ score, totalQuestions, passed, onRetry }) => {
                         {passed ? "Congratulations! You passed!" : "Sorry, you didn't pass. Try again!"}
                     </p>
                     {passed ? (
-                        <p className="text-zinc-300">Redirecting to maze in 3 seconds...</p>
+                        <p className="text-zinc-300">Redirecting to the next stage...</p>
                     ) : (
                         <Button
                             onClick={onRetry}

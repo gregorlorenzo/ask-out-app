@@ -124,3 +124,10 @@ export function formatDate(isoDate, options = {}, locale = 'en-US') {
 
     return dateObject.toLocaleDateString(locale, formatOptions);
 }
+
+export function formatTime(milliseconds) {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}

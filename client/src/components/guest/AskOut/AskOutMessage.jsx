@@ -22,7 +22,7 @@ export default function AskOutMessage({ isAccepted, isDeclined }) {
                 <Heart className="mx-auto mb-4 text-zinc-500 animate-pulse" size={48} />
                 <h1 className="text-2xl font-bold text-zinc-100">Yay! 💖</h1>
                 <p className="mt-2 text-lg text-zinc-300">
-                    I'm thrilled to be your girlfriend! 😄
+                    I'm thrilled to be your boyfriend! 😄
                 </p>
             </motion.div>
         );

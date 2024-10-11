@@ -6,7 +6,7 @@ import { getGuestProgress } from '@/contexts/GuestProgressContext';
 const GuestLayout = lazy(() => import('@/components/guest/Guest/GuestLayout'))
 const GuestWelcome = lazy(() => import('@/pages/guest/GuestWelcome'))
 const GuestQuiz = lazy(() => import('@/pages/guest/GuestQuiz'))
-const GuestMaze = lazy(() => import('@/pages/guest/GuestMaze'))
+// const GuestMaze = lazy(() => import('@/pages/guest/GuestMaze'))
 const GuestSlideshow = lazy(() => import('@/pages/guest/GuestSlideshow'))
 const GuestLetter = lazy(() => import('@/pages/guest/GuestLetter'))
 const GuestAskOut = lazy(() => import('@/pages/guest/GuestAskOut'))
@@ -38,20 +38,20 @@ const guestQuizRoute = createRoute({
   },
 });
 
-const guestMazeRoute = createRoute({
-  getParentRoute: () => guestRoute,
-  path: '/maze',
-  component: GuestMaze,
-  loader: async () => {
-    const progress = getGuestProgress();
-    if (!progress.hasCompletedQuiz) {
-      throw redirect({
-        to: '/guest/quiz',
-      });
-    }
-    return null;
-  },
-});
+// const guestMazeRoute = createRoute({
+//   getParentRoute: () => guestRoute,
+//   path: '/maze',
+//   component: GuestMaze,
+//   loader: async () => {
+//     const progress = getGuestProgress();
+//     if (!progress.hasCompletedQuiz) {
+//       throw redirect({
+//         to: '/guest/quiz',
+//       });
+//     }
+//     return null;
+//   },
+// });
 
 const guestSlideshowRoute = createRoute({
   getParentRoute: () => guestRoute,
@@ -59,9 +59,9 @@ const guestSlideshowRoute = createRoute({
   component: GuestSlideshow,
   loader: async () => {
     const progress = getGuestProgress();
-    if (!progress.hasCompletedMaze) {
+    if (!progress.hasCompletedQuiz) {
       throw redirect({
-        to: '/guest/maze',
+        to: '/guest/quiz',
       });
     }
     return null;
@@ -102,7 +102,7 @@ export const guestRoutes = [
   guestRoute,
   guestWelcomeRoute,
   guestQuizRoute,
-  guestMazeRoute,
+  // guestMazeRoute,
   guestSlideshowRoute,
   guestLetterRoute,
   guestAskOutRoute,

@@ -10,8 +10,8 @@ const GuestLayout = () => {
     return (
         <div className="flex flex-col min-h-screen bg-zinc-900 text-zinc-100">
             <GuestHeader />
-            <main className="flex-grow flex items-center justify-center relative overflow-hidden">
-                <div className="w-full max-w-4xl">
+            <main className="flex-grow flex items-center justify-center relative overflow-hidden p-4 sm:p-6">
+                <div className="w-full max-w-3xl">
                     <AnimatePresence mode="wait" initial={false}>
                         <motion.div
                             key={location.pathname}

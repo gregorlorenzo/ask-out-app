@@ -1,4 +1,5 @@
 import api from './apiConfig';
+import { generateMaze } from '../utils/mazeGenerator';
 
 export const mazeService = {
   getStages: async (isAdmin, page = 1, limit = 10, sort = 'number', usePagination = true) => {
@@ -9,7 +10,13 @@ export const mazeService = {
 
   getStageById: async (id) => {
     const response = await api.get(`/api/maze/${id}`);
-    return response.data;
+    const stageData = response.data;
+
+    // Generate the maze based on the stage's dimensions
+    const { width, height } = stageData.mazeSize;
+    const maze = generateMaze(width, height);
+
+    return { ...stageData, maze };
   },
 
   createStage: async (stageData) => {

@@ -5,7 +5,7 @@ const GuestProgressContext = createContext();
 let currentProgress = {
     hasCompletedWelcome: false,
     hasCompletedQuiz: false,
-    hasCompletedMaze: false,
+    // hasCompletedMaze: false,
     hasCompletedSlideshow: false,
     hasCompletedLetter: false,
     hasCompletedAskOut: false,
@@ -14,10 +14,14 @@ let currentProgress = {
 export const GuestProgressProvider = ({ children }) => {
     const [progress, setProgress] = useState(currentProgress);
 
+    // Modified to return a Promise
     const updateProgress = (newProgress) => {
-        const updatedProgress = { ...progress, ...newProgress };
-        setProgress(updatedProgress);
-        currentProgress = updatedProgress;
+        return new Promise((resolve) => {
+            const updatedProgress = { ...progress, ...newProgress };
+            setProgress(updatedProgress);
+            currentProgress = updatedProgress;
+            resolve();
+        });
     };
 
     return (

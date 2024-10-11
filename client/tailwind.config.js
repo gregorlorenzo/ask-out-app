@@ -7,6 +7,9 @@ export default {
 	],
 	theme: {
 		extend: {
+			fontFamily: {
+				retro: ['"Press Start 2P"', 'monospace'],
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
@@ -65,6 +68,13 @@ export default {
 					800: '#27272a',
 					900: '#18181b',
 				},
+
+			},
+			screens: {
+				sm: '640px',
+				md: '768px',
+				lg: '1024px',
+				xl: '1280px',
 			},
 			keyframes: {
 				'accordion-down': {
