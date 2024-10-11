@@ -16,9 +16,27 @@ const app = express();
 // Connect to database
 connectDB();
 
+// CORS configuration
+const corsOptions = {
+  origin: 'https://ask-out-app.vercel.app', // Frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // Enable if you need to send cookies or auth headers
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// Handle preflight requests for all routes
+app.options('*', cors(corsOptions));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
+
+// Simple test route
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'CORS is working!' });
+});
 
 // Routes
 app.use('/api/auth', authRoutes({
