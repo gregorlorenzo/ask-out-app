@@ -20,6 +20,12 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+// Ping Route
+app.get('/', (req, res) => {
+  res.status(200).send('Server is up and running!');
+});
+
+
 // Routes
 app.use('/api/auth', authRoutes({
   GUEST_PASSKEY: process.env.GUEST_PASSKEY,
