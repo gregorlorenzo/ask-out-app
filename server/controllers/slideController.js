@@ -1,6 +1,6 @@
 const Slide = require('../models/Slide');
-const { uploadImage, deleteImage } = require('../utils/imageUploader');
-const { paginateResults } = require('../utils/helper')
+const { uploadImage, deleteImage, getImageUrl } = require('../utils/imageUploader');
+const { paginateResults } = require('../utils/helper');
 
 // Get all slide items
 exports.getSlide = async (req, res) => {
@@ -11,7 +11,16 @@ exports.getSlide = async (req, res) => {
 
     const paginatedResults = await paginateResults(Slide, {}, page, limit, '', null, sort);
 
-    res.json(paginatedResults);
+    // Generate fresh signed URLs for each slide
+    const slides = paginatedResults.data;
+    for (let slide of slides) {
+      slide.imageUrl = await getImageUrl(slide.imageKey);
+    }
+
+    res.json({
+      ...paginatedResults,
+      data: slides
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -20,10 +29,14 @@ exports.getSlide = async (req, res) => {
 // Get a single slide item by ID
 exports.getSlideById = async (req, res) => {
   try {
-    const slide = await Slide.findById(req.params.id);
+    const slide = await Slide.findById(req.params.id).lean();
     if (!slide) {
       return res.status(404).json({ message: 'Slide not found' });
     }
+
+    // Generate fresh signed URL
+    slide.imageUrl = await getImageUrl(slide.imageKey);
+
     res.json(slide);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -33,7 +46,9 @@ exports.getSlideById = async (req, res) => {
 // Create a new slide item (admin only)
 exports.createSlide = async (req, res) => {
   try {
-    const { url: imageUrl, key: imageKey } = await uploadImage(req.file);
+    const { key: imageKey } = await uploadImage(req.file);
+    const imageUrl = await getImageUrl(imageKey);
+
     const slide = new Slide({
       date: req.body.date,
       title: req.body.title,
@@ -41,6 +56,7 @@ exports.createSlide = async (req, res) => {
       imageUrl,
       imageKey
     });
+
     const newSlide = await slide.save();
     res.status(201).json(newSlide);
   } catch (error) {
