@@ -18,7 +18,7 @@ exports.getSlideshow = async (req, res) => {
       ...slideshow.toObject(),
       slides: await Promise.all(slideshow.slides.map(async (slideItem) => {
         if (!slideItem.slide) return slideItem;
-
+        
         const slide = slideItem.slide;
         return {
           ...slideItem,
@@ -70,7 +70,7 @@ exports.createSlideshow = async (req, res) => {
       ...createdSlideshow.toObject(),
       slides: await Promise.all(createdSlideshow.slides.map(async (slideItem) => {
         if (!slideItem.slide) return slideItem;
-
+        
         const slide = slideItem.slide;
         return {
           ...slideItem,
@@ -125,7 +125,7 @@ exports.updateSlideshow = async (req, res) => {
       ...updatedSlideshow.toObject(),
       slides: await Promise.all(updatedSlideshow.slides.map(async (slideItem) => {
         if (!slideItem.slide) return slideItem;
-
+        
         const slide = slideItem.slide;
         return {
           ...slideItem,
@@ -148,5 +148,17 @@ exports.updateSlideshow = async (req, res) => {
       details: error.message,
       stack: process.env.NODE_ENV === 'production' ? '🥞' : error.stack
     });
+  }
+};
+
+exports.deleteSlideshow = async (req, res) => {
+  try {
+    const slideshow = await Slideshow.findOneAndDelete();
+    if (!slideshow) {
+      return res.status(404).json({ message: 'No slideshow found' });
+    }
+    res.json({ message: 'Slideshow deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
