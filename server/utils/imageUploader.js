@@ -57,14 +57,25 @@ const uploadImage = async (file) => {
   }
 };
 
+// Helper function to generate signed URL
 const getImageUrl = async (key) => {
+  if (!key) return null;
+  
   if (process.env.NODE_ENV === 'production') {
-    return await getS3SignedUrl(key);
+    const getCommand = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: key,
+    });
+    return await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
   } else {
-    // For local development, return the local path
+    // For local development
+    if (key.startsWith('/')) {
+      return key;
+    }
     return `/uploads/slide/${path.basename(key)}`;
   }
 };
+
 
 
 const deleteFromS3 = async (key) => {
