@@ -57,7 +57,6 @@ const uploadImage = async (file) => {
   }
 };
 
-// New function to get image URL
 const getImageUrl = async (key) => {
   if (process.env.NODE_ENV === 'production') {
     return await getS3SignedUrl(key);
@@ -67,8 +66,31 @@ const getImageUrl = async (key) => {
   }
 };
 
+
+const deleteFromS3 = async (key) => {
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: key,
+  };
+
+  const deleteCommand = new DeleteObjectCommand(params);
+  await s3Client.send(deleteCommand);
+};
+
+const deleteFromLocal = async (filePath) => {
+  await fsPromises.unlink(filePath);
+};
+
+const deleteImage = async (key) => {
+  if (process.env.NODE_ENV === 'production') {
+    await deleteFromS3(key);
+  } else {
+    await deleteFromLocal(key);
+  }
+};
+
 module.exports = {
   uploadImage,
   deleteImage,
-  getImageUrl  // Export the new function
+  getImageUrl
 };
