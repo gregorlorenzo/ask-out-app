@@ -1,42 +1,17 @@
 const Slideshow = require('../models/Slideshow');
-const { getImageUrl } = require('../utils/imageUploader');
 
 exports.getSlideshow = async (req, res) => {
   try {
-    const slideshow = await Slideshow.findOne().populate({
-      path: 'slides.slide',
-      model: 'Slide',
-      select: 'date title description imageKey' // Note: we select imageKey instead of imageUrl
-    });
-
+    const slideshow = await Slideshow.findOne().populate('slides.slide');
     if (!slideshow) {
       return res.json({ slides: [] });
     }
-
-    // Generate fresh signed URLs for each slide
-    const processedSlideshow = {
-      ...slideshow.toObject(),
-      slides: await Promise.all(slideshow.slides.map(async (slideItem) => {
-        if (!slideItem.slide) return slideItem;
-        
-        const slide = slideItem.slide;
-        return {
-          ...slideItem,
-          slide: {
-            ...slide,
-            imageUrl: await getImageUrl(slide.imageKey)
-          }
-        };
-      }))
-    };
-
-    res.json(processedSlideshow);
+    res.json(slideshow);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Other controller methods remain the same...
 exports.createSlideshow = async (req, res) => {
   try {
     const existingSlideshow = await Slideshow.findOne();
@@ -58,31 +33,8 @@ exports.createSlideshow = async (req, res) => {
 
     await slideshow.save();
 
-    // Populate and process image URLs
-    const createdSlideshow = await Slideshow.findById(slideshow._id).populate({
-      path: 'slides.slide',
-      model: 'Slide',
-      select: 'date title description imageKey'
-    });
-
-    // Generate fresh signed URLs
-    const processedSlideshow = {
-      ...createdSlideshow.toObject(),
-      slides: await Promise.all(createdSlideshow.slides.map(async (slideItem) => {
-        if (!slideItem.slide) return slideItem;
-        
-        const slide = slideItem.slide;
-        return {
-          ...slideItem,
-          slide: {
-            ...slide,
-            imageUrl: await getImageUrl(slide.imageKey)
-          }
-        };
-      }))
-    };
-
-    res.status(201).json(processedSlideshow);
+    const createdSlideshow = await Slideshow.findById(slideshow._id).populate('slides.slide');
+    res.status(201).json(createdSlideshow);
   } catch (error) {
     res.status(400).json({
       message: 'Error creating slideshow',
@@ -113,31 +65,8 @@ exports.updateSlideshow = async (req, res) => {
 
     await slideshow.save();
 
-    // Populate and process image URLs
-    const updatedSlideshow = await Slideshow.findById(slideshow._id).populate({
-      path: 'slides.slide',
-      model: 'Slide',
-      select: 'date title description imageKey'
-    });
-
-    // Generate fresh signed URLs
-    const processedSlideshow = {
-      ...updatedSlideshow.toObject(),
-      slides: await Promise.all(updatedSlideshow.slides.map(async (slideItem) => {
-        if (!slideItem.slide) return slideItem;
-        
-        const slide = slideItem.slide;
-        return {
-          ...slideItem,
-          slide: {
-            ...slide,
-            imageUrl: await getImageUrl(slide.imageKey)
-          }
-        };
-      }))
-    };
-
-    res.json(processedSlideshow);
+    const updatedSlideshow = await Slideshow.findById(slideshow._id).populate('slides.slide');
+    res.json(updatedSlideshow);
   } catch (error) {
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: 'Validation Error', details: error.errors });
