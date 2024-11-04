@@ -113,7 +113,7 @@ exports.featureLetter = async (req, res) => {
         letter: updatedLetter,
       });
     } else {
-      // Unfeature the specified letter
+      // Un-feature the specified letter
       const letter = await Letter.findById(letterId);
       if (!letter) {
         return res.status(404).json({ message: 'Letter not found' });
@@ -127,7 +127,7 @@ exports.featureLetter = async (req, res) => {
       await letter.save();
 
       res.json({
-        message: 'Letter has been unfeatured successfully',
+        message: 'Letter has been un-featured successfully',
         letter,
       });
     }
