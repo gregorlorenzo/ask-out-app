@@ -1,9 +1,18 @@
 const fs = require('fs');
 const fsPromises = require('fs').promises;
 const path = require('path');
-const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { s3Client } = require('./s3');
+
+// Helper function to generate signed URL
+const getS3SignedUrl = async (key) => {
+  const getCommand = new GetObjectCommand({
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: key,
+  });
+  return await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
+};
 
 const uploadToS3 = async (file) => {
   const s3Key = `slide/${Date.now()}-${file.originalname}`;
@@ -17,13 +26,12 @@ const uploadToS3 = async (file) => {
   const putCommand = new PutObjectCommand(params);
   await s3Client.send(putCommand);
 
-  const getCommand = new GetObjectCommand({
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: s3Key,
-  });
-  const signedUrl = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
-
-  return { url: signedUrl, key: s3Key };
+  // Return the key instead of signed URL
+  return {
+    key: s3Key,
+    // You could return a public URL pattern if your bucket is public
+    // url: `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${s3Key}`
+  };
 };
 
 const uploadToLocal = async (file) => {
@@ -35,7 +43,10 @@ const uploadToLocal = async (file) => {
   const filename = `${Date.now()}-${file.originalname}`;
   const filePath = path.join(uploadsDir, filename);
   await fsPromises.writeFile(filePath, file.buffer);
-  return { url: `/uploads/slide/${filename}`, key: filePath };
+  return {
+    url: `/uploads/slide/${filename}`,
+    key: filePath
+  };
 };
 
 const uploadImage = async (file) => {
@@ -46,26 +57,18 @@ const uploadImage = async (file) => {
   }
 };
 
-const deleteFromS3 = async (key) => {
-  const params = {
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: key,
-  };
-
-  const deleteCommand = new DeleteObjectCommand(params);
-  await s3Client.send(deleteCommand);
-};
-
-const deleteFromLocal = async (filePath) => {
-  await fsPromises.unlink(filePath);
-};
-
-const deleteImage = async (key) => {
+// New function to get image URL
+const getImageUrl = async (key) => {
   if (process.env.NODE_ENV === 'production') {
-    await deleteFromS3(key);
+    return await getS3SignedUrl(key);
   } else {
-    await deleteFromLocal(key);
+    // For local development, return the local path
+    return `/uploads/slide/${path.basename(key)}`;
   }
 };
 
-module.exports = { uploadImage, deleteImage };
+module.exports = {
+  uploadImage,
+  deleteImage,
+  getImageUrl  // Export the new function
+};
